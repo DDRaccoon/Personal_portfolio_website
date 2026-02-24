@@ -30,7 +30,22 @@ export default function IntroSection() {
             alt={siteCopy.intro.name}
             className="h-full w-full object-cover"
             style={{ width: 256, height: 256 }}
+            onError={(e) => {
+              e.currentTarget.style.display = "none";
+              const svg = e.currentTarget.nextElementSibling;
+              if (svg) svg.style.display = "flex";
+            }}
           />
+          {/* SVG fallback avatar — hidden by default */}
+          <span
+            className="absolute inset-0 items-center justify-center bg-zinc-900"
+            style={{ display: "none" }}
+          >
+            <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" width="80" height="80">
+              <circle cx="50" cy="38" r="22" fill="rgba(255,122,24,0.25)" stroke="#FF7A18" strokeWidth="1.5" />
+              <path d="M8 90 C8 68 92 68 92 90" stroke="#FF7A18" strokeWidth="1.5" fill="rgba(255,122,24,0.1)" />
+            </svg>
+          </span>
           {/* subtle orange glow ring */}
           <div
             className="pointer-events-none absolute inset-0 rounded-full"
