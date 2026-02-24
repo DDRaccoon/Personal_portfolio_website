@@ -1,80 +1,67 @@
-'use client';
+"use client";
 
-import React from 'react';
-import Icon from './ui/Icon';
+import Image from "next/image";
 
 export default function ProfileCard() {
   return (
-    <div className="max-w-4xl mx-auto bg-gradient-to-br from-[#1a1a1a]/80 to-[#2a2a2a]/60 backdrop-blur-lg rounded-3xl p-8 md:p-12 border border-[#333]/50 shadow-2xl">
-      <div className="grid md:grid-cols-2 gap-8 items-center">
-        {/* 头像区域 */}
-        <div className="flex flex-col items-center">
-          <div className="relative w-48 h-48 rounded-full overflow-hidden border-4 border-[#ff8c5a]/30 shadow-lg">
-            <img 
-              src="/images/profile.jpg" 
-              alt="SiCheng Chen"
-              className="w-full h-full object-cover"
-            />
-            {/* 音乐律动圆环 */}
-            <div className="absolute inset-0 rounded-full border-2 border-[#ff8c5a]/50 animate-pulse"></div>
+    <section className="min-h-screen flex items-center justify-center px-8">
+      <div className="text-center max-w-2xl">
+        {/* Photo */}
+        <div 
+          className="relative mx-auto mb-8 rounded-full overflow-hidden border border-white/10"
+          style={{ width: '256px', height: '256px' }}
+        >
+          <img
+            src="/images/profile.jpg"
+            alt="SiCheng Chen"
+            className="w-full h-full object-cover"
+            style={{ width: '256px', height: '256px' }}
+          />
+        </div>
+
+        {/* Name & Title */}
+        <h1 className="text-4xl md:text-5xl font-light text-white mb-4 tracking-tight">
+          SiCheng Chen
+        </h1>
+
+        {/* Job Title */}
+        <p className="text-lg text-gray-300 mb-4">
+          Technical Artist / Environment TA (Unreal Engine 5、Unity)
+        </p>
+
+        {/* Location & Birthday */}
+        <div className="text-sm text-gray-400 mb-4 space-y-1">
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
+            <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" />
+              <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" />
+            </svg>
+            <span>Chengdu, China</span>
           </div>
-          
-          <div className="mt-6 text-center">
-            <h3 className="text-2xl font-bold text-white">SiCheng Chen</h3>
-            <p className="text-[#00d4ff] mt-2">Technical Artist</p>
-            
-            {/* 社交图标 */}
-            <div className="flex gap-4 mt-4 justify-center">
-              <Icon size={24} className="text-[#ff8c5a] hover:text-[#ff6b35] transition-colors">
-                <svg fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
-                </svg>
-              </Icon>
-              
-              <Icon size={24} className="text-[#00d4ff] hover:text-[#00a8cc] transition-colors">
-                <svg fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/>
-                </svg>
-              </Icon>
-            </div>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
+            <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <span>June 8, 1994</span>
           </div>
         </div>
-        
-        {/* 个人信息 */}
-        <div className="space-y-6">
-          <div>
-            <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
-              Hi, I'm <span className="text-[#ff8c5a]">SiCheng</span>
-            </h1>
-            <p className="text-lg text-gray-300 leading-relaxed">
-              Technical Artist & Environment Artist with 5+ years of experience in game development. 
-              Specialized in Unreal Engine 5, procedural workflows, and real-time rendering.
-            </p>
+
+        {/* Contact */}
+        <div className="text-sm text-gray-400 space-y-1">
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
+            <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" />
+            </svg>
+            <span>chensicheng0608@outlook.com</span>
           </div>
-          
-          {/* 技能标签 */}
-          <div className="flex flex-wrap gap-2">
-            {['Unreal Engine 5', 'Houdini', 'Substance', 'Python', 'GLSL', 'Blender'].map((skill) => (
-              <span 
-                key={skill}
-                className="px-3 py-1 bg-[#ff8c5a]/10 border border-[#ff8c5a]/30 rounded-full text-sm text-[#ff8c5a]"
-              >
-                {skill}
-              </span>
-            ))}
-          </div>
-          
-          {/* 联系按钮 */}
-          <div className="flex gap-4 mt-6">
-            <button className="px-6 py-3 bg-gradient-to-r from-[#ff8c5a] to-[#ff6b35] rounded-lg font-medium hover:shadow-lg transition-all">
-              View Portfolio
-            </button>
-            <button className="px-6 py-3 border border-[#00d4ff] text-[#00d4ff] rounded-lg font-medium hover:bg-[#00d4ff]/10 transition-all">
-              Contact Me
-            </button>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
+            <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.362-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z" />
+            </svg>
+            <span>+86 155 5333 1116</span>
           </div>
         </div>
       </div>
-    </div>
+    </section>
   );
 }

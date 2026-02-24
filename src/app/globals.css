@@ -1,236 +1,37 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
-/* ===========================================
- * Design Tokens System
- * =========================================== */
+@import "tailwindcss";
 
 :root {
-  /* === Color Tokens === */
-  /* Background */
-  --bg-0: #000000;
-  --bg-1: #0A0A0A;
-  
-  /* Text */
-  --text-strong: rgba(255, 255, 255, 0.92);
-  --text: rgba(255, 255, 255, 0.78);
-  --text-muted: rgba(255, 255, 255, 0.55);
-  
-  /* Border */
-  --border: rgba(255, 255, 255, 0.08);
-  
-  /* Accent */
-  --accent-orange: #FF7A18;
-  
-  /* === Spacing Tokens (8px system) === */
-  --space-1: 8px;
-  --space-2: 12px;
-  --space-3: 16px;
-  --space-4: 24px;
-  --space-5: 32px;
-  --space-6: 48px;
-  
-  /* === Border Radius Tokens === */
-  --radius-card: 16px;
-  --radius-button: 12px;
-  --radius-large: 20px;
-  
-  /* === Animation Tokens === */
-  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
-  --duration-hover: 150ms;
-  --duration-panel: 300ms;
-  
-  /* === Typography Tokens === */
-  --font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-  --font-weight-normal: 400;
-  --font-weight-medium: 500;
-  --font-weight-semibold: 600;
-  --font-weight-bold: 700;
-  
-  --line-height-tight: 1.25;
-  --line-height-normal: 1.5;
-  --line-height-relaxed: 1.75;
+  --background: #000000;
+  --foreground: #ededed;
 }
 
-/* ===========================================
- * Base Styles
- * =========================================== */
-
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-html {
-  scroll-behavior: smooth;
-  height: 100%;
-  min-height: 100vh;
-  background-color: var(--bg-0);
-  overflow-x: hidden;
-}
-
+html,
 body {
-  min-height: 100vh;
-  height: 100%;
-  font-family: var(--font-family);
-  background-color: var(--bg-0);
-  color: var(--text);
-  line-height: var(--line-height-normal);
-  overflow-x: hidden;
-  font-weight: var(--font-weight-normal);
-}
-
-/* Ensure all containers inherit height correctly */
-#__next {
-  min-height: 100vh;
-}
-
-/* ===========================================
- * Utility Classes using Design Tokens
- * =========================================== */
-
-/* Background utilities */
-.bg-0 { background-color: var(--bg-0); }
-.bg-1 { background-color: var(--bg-1); }
-
-/* Text utilities */
-.text-strong { color: var(--text-strong); }
-.text-muted { color: var(--text-muted); }
-
-/* Border utilities */
-.border-token { border-color: var(--border); }
-
-/* Accent utilities */
-.text-accent { color: var(--accent-orange); }
-.bg-accent { background-color: var(--accent-orange); }
-
-/* Spacing utilities */
-.space-1 { gap: var(--space-1); }
-.space-2 { gap: var(--space-2); }
-.space-3 { gap: var(--space-3); }
-.space-4 { gap: var(--space-4); }
-.space-5 { gap: var(--space-5); }
-.space-6 { gap: var(--space-6); }
-
-.p-1 { padding: var(--space-1); }
-.p-2 { padding: var(--space-2); }
-.p-3 { padding: var(--space-3); }
-.p-4 { padding: var(--space-4); }
-.p-5 { padding: var(--space-5); }
-.p-6 { padding: var(--space-6); }
-
-.m-1 { margin: var(--space-1); }
-.m-2 { margin: var(--space-2); }
-.m-3 { margin: var(--space-3); }
-.m-4 { margin: var(--space-4); }
-.m-5 { margin: var(--space-5); }
-.m-6 { margin: var(--space-6); }
-
-/* Border radius utilities */
-.rounded-card { border-radius: var(--radius-card); }
-.rounded-button { border-radius: var(--radius-button); }
-.rounded-large { border-radius: var(--radius-large); }
-
-/* Animation utilities */
-.transition-hover {
-  transition: all var(--duration-hover) var(--ease-out);
-}
-
-.transition-panel {
-  transition: all var(--duration-panel) var(--ease-out);
-}
-
-/* ===========================================
- * Component Styles using Design Tokens
- * =========================================== */
-
-/* Card component */
-.card {
-  background-color: var(--bg-1);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-card);
-  padding: var(--space-4);
-  transition: all var(--duration-hover) var(--ease-out);
-}
-
-.card:hover {
-  border-color: var(--accent-orange);
-  transform: translateY(-2px);
-}
-
-/* Button component */
-.btn {
-  background-color: var(--accent-orange);
-  color: var(--text-strong);
-  border: none;
-  border-radius: var(--radius-button);
-  padding: var(--space-2) var(--space-4);
-  font-weight: var(--font-weight-medium);
-  transition: all var(--duration-hover) var(--ease-out);
-  cursor: pointer;
-}
-
-.btn:hover {
-  opacity: 0.9;
-  transform: translateY(-1px);
-}
-
-.btn:active {
-  transform: translateY(0);
-}
-
-/* ===========================================
- * Custom Components
- * =========================================== */
-
-/* Custom Scrollbar - Simplified */
-::-webkit-scrollbar {
-  width: 6px;
-}
-
-::-webkit-scrollbar-track {
-  background: var(--bg-0);
-}
-
-::-webkit-scrollbar-thumb {
-  background: var(--accent-orange);
-  border-radius: 3px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(180deg, #FFA07A, var(--accent-orange));
+  background: var(--background);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
 }
 
 /* Selection */
 ::selection {
   background-color: rgba(255, 122, 24, 0.3);
-  color: var(--text-strong);
+  color: white;
 }
 
-/* Video Controls */
-video {
-  outline: none;
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 4px;
 }
 
-video::-webkit-media-controls-panel {
-  display: none !important;
+::-webkit-scrollbar-track {
+  background: #000;
 }
 
-video::-webkit-media-controls-play-button,
-video::-webkit-media-controls-start-playback-button {
-  display: none !important;
+::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,0.1);
+  border-radius: 2px;
 }
 
-/* Canvas Styles */
-canvas {
-  display: block;
-  width: 100%;
-  height: 100%;
-  cursor: grab;
-}
-
-canvas:active {
-  cursor: grabbing;
+::-webkit-scrollbar-thumb:hover {
+  background: #ff7a18;
 }

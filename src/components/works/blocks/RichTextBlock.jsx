@@ -1,7 +1,6 @@
-'use client';
+"use client";
 
-import React from 'react';
-import ReactMarkdown from 'react-markdown';
+import ReactMarkdown from "react-markdown";
 
 export default function RichTextBlock({ block }) {
   return (
@@ -9,49 +8,49 @@ export default function RichTextBlock({ block }) {
       <ReactMarkdown
         components={{
           h1: ({ children }) => (
-            <h1 className="text-3xl md:text-4xl font-bold text-text-strong mb-6">
+            <h1 className="mb-6 text-3xl font-semibold text-white md:text-4xl">
               {children}
             </h1>
           ),
           h2: ({ children }) => (
-            <h2 className="text-2xl md:text-3xl font-bold text-text-strong mb-4">
+            <h2 className="mb-4 text-2xl font-semibold text-white md:text-3xl">
               {children}
             </h2>
           ),
           h3: ({ children }) => (
-            <h3 className="text-xl md:text-2xl font-bold text-text-strong mb-3">
+            <h3 className="mb-3 text-xl font-semibold text-white md:text-2xl">
               {children}
             </h3>
           ),
           p: ({ children }) => (
-            <p className="text-text leading-relaxed mb-4">
+            <p className="mb-4 leading-relaxed text-white/80">
               {children}
             </p>
           ),
           ul: ({ children }) => (
-            <ul className="text-gray-300 space-y-2 mb-4">
+            <ul className="mb-4 space-y-2 text-white/75">
               {children}
             </ul>
           ),
           li: ({ children }) => (
             <li className="flex items-start">
-              <span className="text-[#ff8c5a] mr-2 mt-1">•</span>
+              <span className="mr-2 mt-1 text-[#FF7A18]">•</span>
               {children}
             </li>
           ),
           strong: ({ children }) => (
-            <strong className="text-[#ff8c5a] font-semibold">
+            <strong className="font-semibold text-[#FFB58C]">
               {children}
             </strong>
           ),
           code: ({ children }) => (
-            <code className="bg-[#333] text-[#00d4ff] px-2 py-1 rounded text-sm">
+            <code className="rounded bg-white/10 px-2 py-1 text-sm text-[#FFB58C]">
               {children}
             </code>
           )
         }}
       >
-        {block.content}
+        {block.content || ""}
       </ReactMarkdown>
     </div>
   );

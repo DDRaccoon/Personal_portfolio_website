@@ -76,22 +76,35 @@ export default function MusicControl() {
         <source src="/music/background.ogg" type="audio/ogg" />
       </audio>
 
-      {/* 音乐控制按钮 */}
-      <div className="fixed bottom-4 right-4 z-50">
+      {/* 音乐控制按钮 - 左上角旋转音符 */}
+      <div className="fixed top-4 left-4 z-50">
         {showPrompt ? (
-          <button
-            onClick={handleUserInteraction}
-            className="bg-accent-orange text-text-strong px-3 py-2 rounded-button text-sm font-medium transition-hover hover:opacity-90"
-          >
-            Click to enable sound
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={handleUserInteraction}
+              className="bg-bg-1 border border-border text-text-strong p-2 rounded-button transition-hover hover:bg-accent-orange hover:border-accent-orange animate-spin-slow"
+              title={isPlaying ? 'Mute music' : 'Play music'}
+            >
+              <MusicIcon size={16} />
+            </button>
+            <button
+              onClick={handleUserInteraction}
+              className="bg-accent-orange text-text-strong px-3 py-2 rounded-button text-sm font-medium transition-hover hover:opacity-90"
+            >
+              Click to enable sound
+            </button>
+          </div>
         ) : (
           <button
             onClick={handleUserInteraction}
-            className="bg-bg-1 border border-border text-text-strong p-2 rounded-button transition-hover hover:bg-accent-orange hover:border-accent-orange"
+            className={`
+              bg-bg-1 border border-border text-text-strong p-2 rounded-button 
+              transition-hover hover:bg-accent-orange hover:border-accent-orange
+              ${isPlaying ? 'animate-spin-slow' : ''}
+            `}
             title={isPlaying ? 'Mute music' : 'Play music'}
           >
-            {isPlaying ? <SoundOnIcon size={16} /> : <SoundOffIcon size={16} />}
+            {isPlaying ? <MusicIcon size={16} /> : <SoundOffIcon size={16} />}
           </button>
         )}
       </div>

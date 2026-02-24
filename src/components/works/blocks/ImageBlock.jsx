@@ -1,18 +1,16 @@
-'use client';
-
-import React from 'react';
+"use client";
 
 export default function ImageBlock({ block }) {
   return (
-    <div className="space-y-4">
+    <div className="space-y-3">
       <img 
         src={block.src} 
-        alt={block.alt}
-        className="w-full rounded-lg shadow-lg"
+        alt={block.alt || "Work image"}
+        className="w-full rounded-lg border border-white/10 bg-black/40"
         loading="lazy"
       />
       {block.caption && (
-        <p className="text-gray-400 text-sm text-center">
+        <p className="text-center text-sm text-white/60">
           {block.caption}
         </p>
       )}

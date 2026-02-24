@@ -1,63 +1,44 @@
-'use client';
+"use client";
 
-import React, { useState, useEffect, Suspense } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
-import Editor from '../../../components/editor/Editor';
+import { useMemo, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 
-// 包装组件以处理useSearchParams的Suspense
+import WorkEditor from "../../../components/editor/WorkEditor";
+import { CATEGORY_IDS, DEFAULT_CATEGORY } from "../../../constants/workCategories";
+
 function NewWorkPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [initialCategory, setInitialCategory] = useState('full-game');
 
-  useEffect(() => {
-    // 从URL参数获取分类
-    const category = searchParams.get('cat');
-    if (category && ['full-game', 'demos', 'tools', 'shader'].includes(category)) {
-      setInitialCategory(category);
-    }
+  const category = useMemo(() => {
+    const cat = searchParams.get("cat") || DEFAULT_CATEGORY;
+    return CATEGORY_IDS.includes(cat) ? cat : DEFAULT_CATEGORY;
   }, [searchParams]);
 
-  const handleSave = (workData) => {
-    // 保存成功后返回首页
-    router.push('/');
-  };
-
-  const handleCancel = () => {
-    // 取消编辑，返回首页
-    router.push('/');
+  const backToCategory = (nextCategory = category) => {
+    router.push(`/?cat=${nextCategory}`);
   };
 
   return (
-    <div className="min-h-screen bg-bg-0 py-8">
-      <div className="max-w-4xl mx-auto px-4">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-text-strong mb-2">
-            Create New Work
-          </h1>
-          <p className="text-text-muted">
-            Add a new project to your portfolio
-          </p>
-        </div>
-        
-        <Editor 
-          initialCategory={initialCategory}
-          onSave={handleSave}
-          onCancel={handleCancel}
-        />
+    <main className="mx-auto min-h-screen w-full max-w-5xl px-4 py-8">
+      <div className="mb-8 space-y-2">
+        <h1 className="text-3xl font-semibold text-white">Create Work</h1>
+        <p className="text-sm text-white/60">Build a new portfolio entry with structured blocks.</p>
       </div>
-    </div>
+
+      <WorkEditor
+        mode="create"
+        initialCategory={category}
+        onSave={(savedWork) => backToCategory(savedWork.category)}
+        onCancel={() => backToCategory(category)}
+      />
+    </main>
   );
 }
 
-// 主页面组件，添加Suspense边界
 export default function NewWorkPage() {
   return (
-    <Suspense fallback={
-      <div className="min-h-screen bg-bg-0 flex items-center justify-center">
-        <div className="text-text-muted">Loading editor...</div>
-      </div>
-    }>
+    <Suspense fallback={<main className="mx-auto min-h-screen w-full max-w-5xl px-4 py-8" />}>
       <NewWorkPageContent />
     </Suspense>
   );

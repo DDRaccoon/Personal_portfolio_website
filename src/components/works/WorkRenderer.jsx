@@ -1,54 +1,48 @@
-'use client';
+"use client";
 
-import React from 'react';
-import RichTextBlock from './blocks/RichTextBlock';
-import ImageBlock from './blocks/ImageBlock';
-import GalleryBlock from './blocks/GalleryBlock';
-import VideoBlock from './blocks/VideoBlock';
-import MetaBlock from './blocks/MetaBlock';
-import SpacerBlock from './blocks/SpacerBlock';
-import DividerBlock from './blocks/DividerBlock';
+import RichTextBlock from "./blocks/RichTextBlock";
+import ImageBlock from "./blocks/ImageBlock";
+import GalleryBlock from "./blocks/GalleryBlock";
+import VideoBlock from "./blocks/VideoBlock";
+import MetaBlock from "./blocks/MetaBlock";
+import SpacerBlock from "./blocks/SpacerBlock";
+import DividerBlock from "./blocks/DividerBlock";
 
 export default function WorkRenderer({ work }) {
-  if (!work || !work.blocks) {
-    return (
-      <div className="text-center text-text-muted py-16">
-        No work content available
-      </div>
-    );
+  if (!work || !Array.isArray(work.blocks)) {
+    return <p className="py-12 text-center text-sm text-white/60">No work content available.</p>;
   }
 
-  const renderBlock = (block, index) => {
+  const renderBlock = (block) => {
     switch (block.type) {
-      case 'RichText':
-        return <RichTextBlock key={block.id} block={block} />;
-      case 'Image':
-        return <ImageBlock key={block.id} block={block} />;
-      case 'Gallery':
-        return <GalleryBlock key={block.id} block={block} />;
-      case 'Video':
-        return <VideoBlock key={block.id} block={block} />;
-      case 'Meta':
-        return <MetaBlock key={block.id} block={block} />;
-      case 'Spacer':
-        return <SpacerBlock key={block.id} block={block} />;
-      case 'Divider':
-        return <DividerBlock key={block.id} />;
+      case "Text":
+      case "RichText":
+        return <RichTextBlock block={block} />;
+      case "Image":
+        return <ImageBlock block={block} />;
+      case "Gallery":
+        return <GalleryBlock block={block} />;
+      case "Video":
+        return <VideoBlock block={block} />;
+      case "Meta":
+        return <MetaBlock block={block} />;
+      case "Spacer":
+        return <SpacerBlock block={block} />;
+      case "Divider":
+        return <DividerBlock />;
       default:
         return (
-          <div key={block.id} className="text-red-400">
+          <p className="rounded border border-red-400/40 px-3 py-2 text-sm text-red-300">
             Unknown block type: {block.type}
-          </div>
+          </p>
         );
     }
   };
 
   return (
-    <div className="space-y-8 md:space-y-12">
-      {work.blocks.map((block, index) => (
-        <div key={block.id} className="animate-fade-in">
-          {renderBlock(block, index)}
-        </div>
+    <div className="space-y-8 md:space-y-10">
+      {work.blocks.map((block) => (
+        <section key={block.id}>{renderBlock(block)}</section>
       ))}
     </div>
   );
