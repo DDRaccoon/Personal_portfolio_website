@@ -9,12 +9,12 @@ export default function RichTextBlock({ block }) {
       <ReactMarkdown
         components={{
           h1: ({ children }) => (
-            <h1 className="text-3xl md:text-4xl font-bold text-text-strong mb-6 orange-glow">
+            <h1 className="text-3xl md:text-4xl font-bold text-text-strong mb-6">
               {children}
             </h1>
           ),
           h2: ({ children }) => (
-            <h2 className="text-2xl md:text-3xl font-bold text-text-strong mb-4 orange-glow">
+            <h2 className="text-2xl md:text-3xl font-bold text-text-strong mb-4">
               {children}
             </h2>
           ),

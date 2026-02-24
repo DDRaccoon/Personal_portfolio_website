@@ -1,4 +1,6 @@
 import "./globals.css";
+import GlobalBackground from "../components/ui/GlobalBackground";
+import MusicControl from "../components/ui/MusicControl";
 
 export const metadata = {
   title: "SiCheng Chen | Technical Artist",
@@ -8,15 +10,15 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en" className="h-full">
-      <body className="antialiased h-full bg-bg-0">
-        {/* 全局背景层 - 固定在页面最底层 */}
-        <div className="fixed inset-0 -z-10 bg-bg-0">
-          {/* 背景装饰元素 - 极光效果（非常克制） */}
-          <div className="absolute inset-0 bg-gradient-to-br from-bg-0/80 to-bg-1/60"></div>
-        </div>
+      <body className="antialiased h-full">
+        {/* 全局背景 - 单一入口 */}
+        <GlobalBackground />
+        
+        {/* 音乐控制 */}
+        <MusicControl />
         
         {/* 内容层 */}
-        <div className="relative z-10 min-h-screen">
+        <div className="relative z-0 min-h-screen">
           {children}
         </div>
       </body>

@@ -185,7 +185,7 @@ body {
  * Custom Components
  * =========================================== */
 
-/* Custom Scrollbar */
+/* Custom Scrollbar - Simplified */
 ::-webkit-scrollbar {
   width: 6px;
 }
@@ -195,7 +195,7 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: linear-gradient(180deg, var(--accent-orange), #FF6B35);
+  background: var(--accent-orange);
   border-radius: 3px;
 }
 
@@ -233,18 +233,4 @@ canvas {
 
 canvas:active {
   cursor: grabbing;
-}
-
-/* Orange Glow Effect */
-.orange-glow {
-  text-shadow: 
-    0 0 10px rgba(255, 122, 24, 0.5),
-    0 0 20px rgba(255, 122, 24, 0.3),
-    0 0 30px rgba(255, 122, 24, 0.2);
-}
-
-/* Cyan Accent (保留兼容性) */
-.cyan-accent {
-  color: #00d4ff;
-  text-shadow: 0 0 10px rgba(0, 212, 255, 0.5);
 }

@@ -13,7 +13,7 @@ export default function WorkCard({ work }) {
 
   return (
     <div 
-      className="group cursor-pointer bg-gradient-to-br from-bg-1/80 to-[#2a2a2a]/60 backdrop-blur-lg rounded-card overflow-hidden border border-border hover:border-accent-orange/50 transition-hover hover:shadow-2xl hover:scale-105"
+      className="group cursor-pointer bg-bg-1 rounded-card overflow-hidden border border-border hover:border-accent-orange transition-hover"
       onClick={handleClick}
     >
       {/* 封面图片 */}
@@ -36,33 +36,11 @@ export default function WorkCard({ work }) {
       {/* 内容信息 */}
       <div className="p-6">
         <h3 className="text-xl font-bold text-text-strong mb-2 group-hover:text-accent-orange transition-colors">
-          {work.title}
+          {work.title_en || work.title}
         </h3>
         <p className="text-text-muted text-sm leading-relaxed line-clamp-3">
-          {work.summary}
+          {work.summary_en || work.summary}
         </p>
-        
-        {/* 标签 */}
-        <div className="flex flex-wrap gap-1 mt-3">
-          {work.tags.slice(0, 3).map((tag) => (
-            <span 
-              key={tag}
-              className="px-2 py-1 bg-accent-orange/10 border border-accent-orange/30 rounded text-xs text-accent-orange"
-            >
-              {tag}
-            </span>
-          ))}
-          {work.tags.length > 3 && (
-            <span className="px-2 py-1 bg-[#333]/50 rounded text-xs text-gray-400">
-              +{work.tags.length - 3}
-            </span>
-          )}
-        </div>
-        
-        {/* 年份 */}
-        <div className="mt-3 text-xs text-gray-500">
-          {work.year}
-        </div>
       </div>
     </div>
   );
