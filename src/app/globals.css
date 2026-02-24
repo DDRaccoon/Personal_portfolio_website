@@ -3,6 +3,27 @@
 :root {
   --background: #000000;
   --foreground: #ededed;
+
+  /* Legacy design tokens — kept for backward compat with older components */
+  --bg-0: #000000;
+  --bg-1: #0a0a0a;
+  --text-strong: rgba(255, 255, 255, 0.92);
+  --text: rgba(255, 255, 255, 0.78);
+  --text-muted: rgba(255, 255, 255, 0.55);
+  --border: rgba(255, 255, 255, 0.08);
+  --accent-orange: #ff7a18;
+  --radius-card: 16px;
+  --radius-button: 12px;
+  --radius-large: 20px;
+  --space-1: 8px;
+  --space-2: 12px;
+  --space-3: 16px;
+  --space-4: 24px;
+  --space-5: 32px;
+  --space-6: 48px;
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --duration-hover: 150ms;
+  --duration-panel: 300ms;
 }
 
 html,
