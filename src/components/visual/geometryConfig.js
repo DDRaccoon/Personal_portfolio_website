@@ -75,40 +75,37 @@ export const GEO_CONFIG = {
     glowRadius: 12,
   },
 
-  // === B) Music-reactive Circles (enhanced — HUD/Orbital style) ===
+  // === B) Circle Layer (single outer ring + inner geometry lines) ===
   circles: {
-    count: 2,                    // 1–3 large circles
-    baseRadius: [140, 220],      // px — larger for more presence
-    stroke: 2.2,                 // 1.5–3px (clearly thicker than line network 0.5px)
-    alpha: 0.22,                 // base stroke alpha
-    fillOpacity: 0.04,           // 0.03–0.08 semi-transparent fill
-    glowOpacity: 0.14,           // 0.08–0.22 inner glow
-    glowSpread: 1.35,            // glow radius = ring radius × this
+    count: 2,
+    baseRadius: [140, 220],
 
-    // Breathing (idle — no music)
-    breathSpeed: 0.12,           // cycles per second (period ~8s)
-    breathScale: [0.03, 0.07],   // idle radius variation ±3%–7%
+    // Outer ring — ONE ring only, thick and prominent
+    ringStrokeWidth: 4.5,        // 3–6px (desktop 4–5, mobile 3–4)
+    ringOpacity: 0.40,           // 0.25–0.60
+    ringGlowOpacity: 0.16,      // 0.10–0.25 subtle inner glow
+    ringGlowSpread: 1.25,       // glow radius = ring radius × this
 
-    // Music reactivity (stronger)
-    bassRadiusAmp: 0.08,         // 0.04–0.10 bass → radius
-    midFlickerAmp: 0.04,         // 0.02–0.06 mid → tick/detail flicker
-    musicMultiplier: 2.5,        // overall music energy scale
+    // Inner geometry — straight lines only, NO arcs/circles
+    insideLineCount: 10,         // 6–16 line segments inside
+    insideStrokeWidth: 1.2,      // 1–2px (thinner than outer ring)
+    insideOpacity: 0.22,         // 0.12–0.35
+    insidePointCount: 6,         // anchor points on ring edge (vertices)
+    insideCenterLines: true,     // draw lines from center to edge points
+
+    // Breathing (idle — no music, period ~8s)
+    breathSpeed: 0.12,
+    breathScale: [0.03, 0.07],
+
+    // Music reactivity
+    bassRadiusAmp: 0.08,         // 0.04–0.10 bass → outer ring radius ±
+    musicMultiplier: 2.5,
     musicLerp: 0.12,             // smooth factor (prevents jitter)
-
-    // Concentric rings
-    concentricRings: 4,
-    ringGap: 22,
-
-    // HUD tick marks (orbital detail)
-    tickCount: 36,               // small tick marks around outermost ring
-    tickLength: 6,               // px
-    tickWidth: 1,
-    tickAlpha: 0.18,
 
     // Positioning — avoid text, prefer mid-right / mid-left
     positions: [
-      { xRatio: 0.72, yRatio: 0.38 },  // circle 1: right-center
-      { xRatio: 0.22, yRatio: 0.62 },  // circle 2: left-lower
+      { xRatio: 0.72, yRatio: 0.38 },
+      { xRatio: 0.22, yRatio: 0.62 },
     ],
 
     color: "orange",

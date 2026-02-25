@@ -125,12 +125,38 @@ export class GeometryRenderer {
     this._circles = [];
     for (let i = 0; i < cfg.count; i++) {
       const pos = cfg.positions[i] || { xRatio: rand(0.2, 0.8), yRatio: rand(0.3, 0.7) };
+      const nPts = cfg.insidePointCount;
+      // Generate anchor points evenly spaced on ring edge (unit circle)
+      const edgeAngles = [];
+      const baseAngle = rand(0, Math.PI * 2);
+      for (let p = 0; p < nPts; p++) {
+        edgeAngles.push(baseAngle + (p / nPts) * Math.PI * 2 + rand(-0.15, 0.15));
+      }
+      // Pre-compute which edge points connect to each other (Delaunay-like simple mesh)
+      const connections = [];
+      for (let a = 0; a < nPts; a++) {
+        // Connect to next neighbor
+        connections.push([a, (a + 1) % nPts]);
+        // Connect to point across (skip 2)
+        if (nPts >= 5) connections.push([a, (a + Math.floor(nPts / 2)) % nPts]);
+      }
+      // Deduplicate connections
+      const connSet = new Set();
+      const uniqueConns = [];
+      for (const [a, b] of connections) {
+        const key = Math.min(a, b) + "-" + Math.max(a, b);
+        if (!connSet.has(key)) { connSet.add(key); uniqueConns.push([a, b]); }
+      }
+      // Trim to insideLineCount
+      while (uniqueConns.length > cfg.insideLineCount) uniqueConns.pop();
+
       this._circles.push({
         cx: (this.W || 1920) * pos.xRatio,
         cy: (this.H || 1080) * pos.yRatio,
         baseRadius: rand(cfg.baseRadius[0], cfg.baseRadius[1]),
         phase: rand(0, Math.PI * 2),
-        tickRotation: rand(0, Math.PI * 2),
+        edgeAngles,
+        connections: uniqueConns,
       });
     }
   }
@@ -211,10 +237,6 @@ export class GeometryRenderer {
       }
     }
 
-    // Slowly rotate circle tick marks
-    for (const c of this._circles) {
-      c.tickRotation += 0.0003 * dtFactor;
-    }
   }
 
   _spawnMeteor() {
@@ -448,7 +470,7 @@ export class GeometryRenderer {
     ctx.restore();
   }
 
-  // ── B) Enhanced HUD/Orbital Circles ──
+  // ── B) Circle Layer (single outer ring + inner geometry lines) ──
 
   _drawCircles(ctx, W, H, offset, settings) {
     const cfg = GEO_CONFIG.circles;
@@ -457,7 +479,6 @@ export class GeometryRenderer {
     // Smoothed music energy
     const hasMusicInput = settings.musicReactive && this.audio.isConnected && this._smoothEnergy > 0.01;
     const bassE = hasMusicInput ? this._smoothBass * cfg.musicMultiplier : 0;
-    const midE = hasMusicInput ? this._smoothMid * cfg.musicMultiplier : 0;
 
     ctx.save();
     ctx.translate(offset.x, offset.y);
@@ -465,100 +486,76 @@ export class GeometryRenderer {
     for (let ci = 0; ci < this._circles.length; ci++) {
       const c = this._circles[ci];
 
-      // ── Idle breathing (always active, 6–12s period) ──
+      // ── Idle breathing (always active, ~8s period) ──
       const breathPhase = this._time * cfg.breathSpeed * Math.PI * 2 + c.phase;
       const idleBreath = Math.sin(breathPhase) * 0.5 + 0.5; // 0–1
       const idleAmount = lerp(cfg.breathScale[0], cfg.breathScale[1], idleBreath);
 
-      // ── Music-driven radius boost ──
+      // ── Music-driven radius (bass only, smoothed) ──
       const musicRadius = bassE * cfg.bassRadiusAmp;
-      // Smooth transition: when music starts, idle fades out proportionally
-      const musicBlend = clamp(this._smoothEnergy * 4, 0, 1); // 0=idle only, 1=music dominates
+      const musicBlend = clamp(this._smoothEnergy * 4, 0, 1);
       const radiusMod = 1 + lerp(idleAmount, musicRadius + idleAmount * 0.5, hasMusicInput ? musicBlend : 0);
-
       const outerR = c.baseRadius * radiusMod;
 
-      // ── Semi-transparent fill (innermost area) ──
-      ctx.fillStyle = `rgba(${rgb[0]},${rgb[1]},${rgb[2]},${cfg.fillOpacity})`;
-      ctx.beginPath();
-      ctx.arc(c.cx, c.cy, outerR * 0.85, 0, Math.PI * 2);
-      ctx.fill();
-
-      // ── Inner glow ──
-      const glowAlpha = cfg.glowOpacity * (0.5 + idleBreath * 0.3 + bassE * 0.3);
-      const glowR = outerR * cfg.glowSpread;
-      const glowGrad = ctx.createRadialGradient(c.cx, c.cy, outerR * 0.3, c.cx, c.cy, glowR);
-      glowGrad.addColorStop(0, `rgba(${rgb[0]},${rgb[1]},${rgb[2]},${clamp(glowAlpha, 0, 0.22)})`);
-      glowGrad.addColorStop(0.6, `rgba(${rgb[0]},${rgb[1]},${rgb[2]},${clamp(glowAlpha * 0.3, 0, 0.08)})`);
+      // ── Inner glow (restrained) ──
+      const glowAlpha = cfg.ringGlowOpacity * (0.5 + idleBreath * 0.3 + bassE * 0.2);
+      const glowR = outerR * cfg.ringGlowSpread;
+      const glowGrad = ctx.createRadialGradient(c.cx, c.cy, outerR * 0.5, c.cx, c.cy, glowR);
+      glowGrad.addColorStop(0, `rgba(${rgb[0]},${rgb[1]},${rgb[2]},${clamp(glowAlpha, 0, 0.25)})`);
+      glowGrad.addColorStop(0.7, `rgba(${rgb[0]},${rgb[1]},${rgb[2]},${clamp(glowAlpha * 0.2, 0, 0.06)})`);
       glowGrad.addColorStop(1, `rgba(${rgb[0]},${rgb[1]},${rgb[2]},0)`);
       ctx.fillStyle = glowGrad;
       ctx.beginPath();
       ctx.arc(c.cx, c.cy, glowR, 0, Math.PI * 2);
       ctx.fill();
 
-      // ── Concentric rings (thick, clearly distinct from line network) ──
-      for (let ring = 0; ring < cfg.concentricRings; ring++) {
-        const r = (outerR - ring * cfg.ringGap * radiusMod);
-        if (r <= 0) continue;
-
-        const ringAlpha = cfg.alpha * (1 - ring * 0.18);
-        const strokeVar = hasMusicInput ? bassE * 1.2 : idleBreath * 0.3;
-        const lw = cfg.stroke + strokeVar;
-
-        ctx.strokeStyle = `rgba(${rgb[0]},${rgb[1]},${rgb[2]},${clamp(ringAlpha, 0, 0.35)})`;
-        ctx.lineWidth = lw;
-        ctx.beginPath();
-        ctx.arc(c.cx, c.cy, r, 0, Math.PI * 2);
-        ctx.stroke();
-      }
-
-      // ── HUD tick marks (outermost ring — orbital detail) ──
-      const tickR = outerR + 4;
-      const tickAlphaBase = cfg.tickAlpha;
-      ctx.lineWidth = cfg.tickWidth;
-
-      for (let t = 0; t < cfg.tickCount; t++) {
-        const angle = c.tickRotation + (t / cfg.tickCount) * Math.PI * 2;
-
-        // Mid-frequency flicker on every 3rd tick
-        let tickAlpha = tickAlphaBase;
-        if (hasMusicInput && t % 3 === 0) {
-          tickAlpha += midE * cfg.midFlickerAmp * 3;
-        }
-        tickAlpha = clamp(tickAlpha, 0.05, 0.35);
-
-        // Alternate tick lengths
-        const tLen = (t % 6 === 0) ? cfg.tickLength * 1.8 : cfg.tickLength;
-
-        const x1 = c.cx + Math.cos(angle) * tickR;
-        const y1 = c.cy + Math.sin(angle) * tickR;
-        const x2 = c.cx + Math.cos(angle) * (tickR + tLen);
-        const y2 = c.cy + Math.sin(angle) * (tickR + tLen);
-
-        ctx.strokeStyle = `rgba(${rgb[0]},${rgb[1]},${rgb[2]},${tickAlpha})`;
-        ctx.beginPath();
-        ctx.moveTo(x1, y1);
-        ctx.lineTo(x2, y2);
-        ctx.stroke();
-      }
-
-      // ── Crosshair lines (subtle HUD accent) ──
-      const chLen = outerR * 0.15;
-      const chAlpha = 0.08 + idleBreath * 0.04;
-      ctx.strokeStyle = `rgba(${rgb[0]},${rgb[1]},${rgb[2]},${chAlpha})`;
-      ctx.lineWidth = 0.5;
-      // horizontal
+      // ── Single outer ring (ONE ring, thick, prominent) ──
+      const ringStrokeVar = hasMusicInput ? bassE * 1.0 : idleBreath * 0.4;
+      ctx.strokeStyle = `rgba(${rgb[0]},${rgb[1]},${rgb[2]},${clamp(cfg.ringOpacity, 0.25, 0.60)})`;
+      ctx.lineWidth = cfg.ringStrokeWidth + ringStrokeVar;
       ctx.beginPath();
-      ctx.moveTo(c.cx - outerR - chLen, c.cy);
-      ctx.lineTo(c.cx - outerR + 8, c.cy);
-      ctx.moveTo(c.cx + outerR - 8, c.cy);
-      ctx.lineTo(c.cx + outerR + chLen, c.cy);
-      // vertical
-      ctx.moveTo(c.cx, c.cy - outerR - chLen);
-      ctx.lineTo(c.cx, c.cy - outerR + 8);
-      ctx.moveTo(c.cx, c.cy + outerR - 8);
-      ctx.lineTo(c.cx, c.cy + outerR + chLen);
+      ctx.arc(c.cx, c.cy, outerR, 0, Math.PI * 2);
       ctx.stroke();
+
+      // ── Inner geometry lines (straight lines only, NO arcs/circles) ──
+      const insideAlpha = cfg.insideOpacity + (hasMusicInput ? bassE * 0.06 : idleBreath * 0.04);
+      ctx.strokeStyle = `rgba(${rgb[0]},${rgb[1]},${rgb[2]},${clamp(insideAlpha, 0.08, 0.35)})`;
+      ctx.lineWidth = cfg.insideStrokeWidth;
+
+      // Compute edge point positions on the ring
+      const edgePts = c.edgeAngles.map((angle) => ({
+        x: c.cx + Math.cos(angle) * outerR,
+        y: c.cy + Math.sin(angle) * outerR,
+      }));
+
+      // Draw edge-to-edge connections (geometric mesh)
+      for (const [a, b] of c.connections) {
+        if (a < edgePts.length && b < edgePts.length) {
+          ctx.beginPath();
+          ctx.moveTo(edgePts[a].x, edgePts[a].y);
+          ctx.lineTo(edgePts[b].x, edgePts[b].y);
+          ctx.stroke();
+        }
+      }
+
+      // Draw center-to-edge radial lines (if enabled)
+      if (cfg.insideCenterLines) {
+        const centerAlpha = clamp(insideAlpha * 0.7, 0.06, 0.25);
+        ctx.strokeStyle = `rgba(${rgb[0]},${rgb[1]},${rgb[2]},${centerAlpha})`;
+        ctx.lineWidth = cfg.insideStrokeWidth * 0.8;
+        for (const pt of edgePts) {
+          ctx.beginPath();
+          ctx.moveTo(c.cx, c.cy);
+          ctx.lineTo(pt.x, pt.y);
+          ctx.stroke();
+        }
+      }
+
+      // Small center dot
+      ctx.fillStyle = `rgba(${rgb[0]},${rgb[1]},${rgb[2]},${clamp(cfg.ringOpacity * 0.5, 0.1, 0.3)})`;
+      ctx.beginPath();
+      ctx.arc(c.cx, c.cy, 2.5, 0, Math.PI * 2);
+      ctx.fill();
     }
 
     ctx.restore();
