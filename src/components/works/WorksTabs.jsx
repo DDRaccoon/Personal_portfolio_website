@@ -3,20 +3,20 @@
 import React from 'react';
 import './WorksTabs.css';
 
-const TABS = [
+const DEFAULT_TABS = [
   { id: 'full-game', label: 'FULL GAME PROJECT EXPERIENCE' },
   { id: 'demos', label: 'GAME DEMOS' },
   { id: 'tools', label: 'TOOLS / FEATURES' },
   { id: 'shader', label: 'SHADER / VFX' },
 ];
 
-export default function WorksTabs({ activeCategory, onCategoryChange }) {
+export default function WorksTabs({ activeCategory, onCategoryChange, tabs = DEFAULT_TABS, ariaLabel = 'Work categories' }) {
   return (
-    <div className="works-tabs" role="tablist" aria-label="Work categories">
+    <div className="works-tabs" role="tablist" aria-label={ariaLabel}>
       {/* Subtle grid lines behind tabs */}
       <div className="works-tabs__grid-bg" aria-hidden="true" />
 
-      {TABS.map((tab, idx) => {
+      {tabs.map((tab, idx) => {
         const isActive = tab.id === activeCategory;
         return (
           <button
@@ -29,10 +29,10 @@ export default function WorksTabs({ activeCategory, onCategoryChange }) {
             className={`works-tab ${isActive ? 'works-tab--active' : ''}`}
             onKeyDown={(e) => {
               if (e.key === 'ArrowRight') {
-                const next = TABS[(idx + 1) % TABS.length];
+                const next = tabs[(idx + 1) % tabs.length];
                 onCategoryChange(next.id);
               } else if (e.key === 'ArrowLeft') {
-                const prev = TABS[(idx - 1 + TABS.length) % TABS.length];
+                const prev = tabs[(idx - 1 + tabs.length) % tabs.length];
                 onCategoryChange(prev.id);
               }
             }}

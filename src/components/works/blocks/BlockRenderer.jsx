@@ -52,9 +52,9 @@ function TextRendererBlock({ block }) {
 function VideoRendererBlock({ block }) {
   const isEmbed = /youtube|youtu\.be|vimeo/.test(block.src || "");
   return (
-    <div className="space-y-3">
+    <figure className="space-y-3">
       {isEmbed ? (
-        <div className="overflow-hidden rounded-lg border border-white/10 bg-[#1a1a1a]">
+        <div className="overflow-hidden rounded-xl border border-white/10 bg-black">
           <iframe
             src={(block.src || "").replace("watch?v=", "embed/")}
             className="aspect-video w-full"
@@ -66,9 +66,9 @@ function VideoRendererBlock({ block }) {
         <VideoBlock block={block} />
       )}
       {block.caption && (
-        <p className="text-center text-[14px] text-white/50">{block.caption}</p>
+        <figcaption className="text-center text-[13px] tracking-wide text-white/45">{block.caption}</figcaption>
       )}
-    </div>
+    </figure>
   );
 }
 

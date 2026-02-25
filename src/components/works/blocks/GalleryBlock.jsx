@@ -11,34 +11,34 @@ export default function GalleryBlock({ block }) {
   };
 
   return (
-    <div className="space-y-4">
-      <div className={`grid ${gridClasses[columns]} gap-4`}>
-        {images.map((image, index) => {
-          const imageSrc = typeof image === "string" ? image : image?.src;
-          const imageAlt = typeof image === "string" ? `Gallery image ${index + 1}` : image?.alt || `Gallery image ${index + 1}`;
-          const imageCaption = typeof image === "string" ? "" : image?.caption;
+    <div className={`grid ${gridClasses[columns]} gap-4`}>
+      {images.map((image, index) => {
+        const imageSrc = typeof image === "string" ? image : image?.src;
+        const imageAlt = typeof image === "string" ? `Gallery image ${index + 1}` : image?.alt || `Gallery image ${index + 1}`;
+        const imageCaption = typeof image === "string" ? "" : image?.caption;
 
-          if (!imageSrc) {
-            return null;
-          }
+        if (!imageSrc) {
+          return null;
+        }
 
-          return (
-          <div key={index} className="group cursor-pointer">
+        return (
+        <figure key={index} className="group">
+          <div className="overflow-hidden rounded-xl border border-white/10">
             <img 
               src={imageSrc}
               alt={imageAlt}
-              className="h-48 w-full rounded-lg border border-white/10 object-cover transition-transform duration-300 group-hover:scale-105"
+              className="h-52 w-full object-cover transition-transform duration-500 group-hover:scale-105"
               loading="lazy"
             />
-            {imageCaption && (
-              <p className="mt-2 text-center text-sm text-white/60">
-                {imageCaption}
-              </p>
-            )}
           </div>
-          );
-        })}
-      </div>
+          {imageCaption && (
+            <figcaption className="mt-2 text-center text-[13px] tracking-wide text-white/45">
+              {imageCaption}
+            </figcaption>
+          )}
+        </figure>
+        );
+      })}
     </div>
   );
 }

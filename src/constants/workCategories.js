@@ -13,7 +13,7 @@ export const WORK_CATEGORIES = [
   },
   {
     id: "shader",
-    label: "Shader / VFX",
+    label: "Shader / VFX / Model",
   },
 ];
 

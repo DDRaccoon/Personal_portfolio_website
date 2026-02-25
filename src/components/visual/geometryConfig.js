@@ -75,37 +75,42 @@ export const GEO_CONFIG = {
     glowRadius: 12,
   },
 
-  // === B) Circle Layer (single outer ring + inner geometry lines) ===
+  // === B) Circle/Sphere Layer (dot matrix + local interaction) ===
   circles: {
     count: 2,
-    baseRadius: [140, 220],
+    baseRadius: [130, 210],
 
-    // Outer ring — ONE ring only, thick and prominent
-    ringStrokeWidth: 4.5,        // 3–6px (desktop 4–5, mobile 3–4)
-    ringOpacity: 0.40,           // 0.25–0.60
-    ringGlowOpacity: 0.16,      // 0.10–0.25 subtle inner glow
-    ringGlowSpread: 1.25,       // glow radius = ring radius × this
+    // Always-on rotation + music boost
+    baseRotSpeedX: 0.012,
+    baseRotSpeedY: 0.05,
+    baseRotSpeedZ: 0.01,
+    rotBoostMax: 0.06,
 
-    // Inner geometry — straight lines only, NO arcs/circles
-    insideLineCount: 10,         // 6–16 line segments inside
-    insideStrokeWidth: 1.2,      // 1–2px (thinner than outer ring)
-    insideOpacity: 0.22,         // 0.12–0.35
-    insidePointCount: 6,         // anchor points on ring edge (vertices)
-    insideCenterLines: true,     // draw lines from center to edge points
+    // Breathing (idle + music)
+    breatheAmp: 0.12,
+    breathePeriod: 8,
 
-    // Breathing (idle — no music, period ~8s)
-    breathSpeed: 0.12,
-    breathScale: [0.03, 0.07],
+    // Inner geometry — straight lines only
+    insideLineCount: 10,
+    insideStrokeWidth: 1.15,
+    insideOpacity: 0.25,
+    insidePointCount: 6,
+    insideCenterLines: true,
 
-    // Music reactivity
-    bassRadiusAmp: 0.08,         // 0.04–0.10 bass → outer ring radius ±
-    musicMultiplier: 2.5,
-    musicLerp: 0.12,             // smooth factor (prevents jitter)
+    // Silhouette + glow
+    ringStrokeWidth: 3.2,
+    ringOpacity: 0.38,
+    ringGlowOpacity: 0.24,
+    ringGlowSpread: 1.45,
 
-    // Positioning — avoid text, prefer mid-right / mid-left
+    // Music smoothing
+    musicMultiplier: 3.2,
+    musicLerp: 0.10,
+
+    // Positioning — two spheres, left/right with different scales
     positions: [
-      { xRatio: 0.72, yRatio: 0.38 },
-      { xRatio: 0.22, yRatio: 0.62 },
+      { xRatio: 0.26, yRatio: 0.61, radiusScale: 0.82, spinSpeedMul: 0.7, pointCount: 5, lineCount: 8, centerLines: true },
+      { xRatio: 0.72, yRatio: 0.43, radiusScale: 1.14, spinSpeedMul: 1.3, pointCount: 8, lineCount: 14, centerLines: false },
     ],
 
     color: "orange",
@@ -115,13 +120,13 @@ export const GEO_CONFIG = {
   parallax: {
     mouse: {
       far: 4,
-      mid: 14,       // ↑ from 10 → more obvious circle movement
+      mid: 6,        // reduced to prevent spheres leaving viewport
       near: 16,
       lerp: 0.06,
     },
     scroll: {
       far: 0.2,
-      mid: 0.55,     // ↑ from 0.45
+      mid: 0.18,     // reduced to prevent spheres leaving viewport
       near: 0.9,
       lerp: 0.08,
     },

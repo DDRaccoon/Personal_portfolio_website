@@ -48,6 +48,7 @@ export default function GeometryBackgroundCanvas() {
     // Also try on any user interaction (helps with autoplay policy)
     const onInteraction = () => {
       tryConnectAudio();
+      if (audio.isConnected) audio.resume();
     };
     window.addEventListener("pointerdown", onInteraction, { passive: true });
     window.addEventListener("keydown", onInteraction, { passive: true });

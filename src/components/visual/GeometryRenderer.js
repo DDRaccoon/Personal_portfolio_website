@@ -123,40 +123,51 @@ export class GeometryRenderer {
   _initCircles() {
     const cfg = GEO_CONFIG.circles;
     this._circles = [];
-    for (let i = 0; i < cfg.count; i++) {
+    const circleCount = cfg.count || 1;
+
+    for (let i = 0; i < circleCount; i++) {
       const pos = cfg.positions[i] || { xRatio: rand(0.2, 0.8), yRatio: rand(0.3, 0.7) };
-      const nPts = cfg.insidePointCount;
-      // Generate anchor points evenly spaced on ring edge (unit circle)
+      const nPts = pos.pointCount || cfg.insidePointCount;
+      const maxLines = pos.lineCount || cfg.insideLineCount;
+      const useCenterLines = pos.centerLines !== undefined ? pos.centerLines : cfg.insideCenterLines;
+
       const edgeAngles = [];
       const baseAngle = rand(0, Math.PI * 2);
       for (let p = 0; p < nPts; p++) {
-        edgeAngles.push(baseAngle + (p / nPts) * Math.PI * 2 + rand(-0.15, 0.15));
+        edgeAngles.push(baseAngle + (p / nPts) * Math.PI * 2 + rand(-0.12, 0.12));
       }
-      // Pre-compute which edge points connect to each other (Delaunay-like simple mesh)
+
       const connections = [];
       for (let a = 0; a < nPts; a++) {
-        // Connect to next neighbor
         connections.push([a, (a + 1) % nPts]);
-        // Connect to point across (skip 2)
         if (nPts >= 5) connections.push([a, (a + Math.floor(nPts / 2)) % nPts]);
+        if (nPts >= 7) connections.push([a, (a + 2) % nPts]);
       }
-      // Deduplicate connections
+
       const connSet = new Set();
       const uniqueConns = [];
       for (const [a, b] of connections) {
         const key = Math.min(a, b) + "-" + Math.max(a, b);
-        if (!connSet.has(key)) { connSet.add(key); uniqueConns.push([a, b]); }
+        if (!connSet.has(key)) {
+          connSet.add(key);
+          uniqueConns.push([a, b]);
+        }
       }
-      // Trim to insideLineCount
-      while (uniqueConns.length > cfg.insideLineCount) uniqueConns.pop();
+      while (uniqueConns.length > maxLines) uniqueConns.pop();
+
+      const radiusScale = pos.radiusScale || 1;
+      const spinSpeedMul = pos.spinSpeedMul || 1;
 
       this._circles.push({
-        cx: (this.W || 1920) * pos.xRatio,
-        cy: (this.H || 1080) * pos.yRatio,
-        baseRadius: rand(cfg.baseRadius[0], cfg.baseRadius[1]),
+        xRatio: pos.xRatio,
+        yRatio: pos.yRatio,
+        baseRadius: rand(cfg.baseRadius[0], cfg.baseRadius[1]) * radiusScale,
         phase: rand(0, Math.PI * 2),
         edgeAngles,
         connections: uniqueConns,
+        spin: rand(0, Math.PI * 2),
+        spinSpeedMul,
+        useCenterLines,
       });
     }
   }
@@ -235,6 +246,13 @@ export class GeometryRenderer {
         m.life -= dt;
         if (m.life <= 0) this._meteors.splice(i, 1);
       }
+    }
+
+    const circleCfg = GEO_CONFIG.circles;
+    const bassBoost = clamp(this._smoothBass * circleCfg.musicMultiplier, 0, 1);
+    for (const circle of this._circles) {
+      const boost = bassBoost * circleCfg.rotBoostMax;
+      circle.spin += (circleCfg.baseRotSpeedY + boost) * (dt * 0.001) * (circle.spinSpeedMul || 1);
     }
 
   }
@@ -470,65 +488,60 @@ export class GeometryRenderer {
     ctx.restore();
   }
 
-  // ── B) Circle Layer (single outer ring + inner geometry lines) ──
+  // ── B) Circle/Sphere Layer (rotating dot matrix + local interaction) ──
 
   _drawCircles(ctx, W, H, offset, settings) {
     const cfg = GEO_CONFIG.circles;
-    const rgb = GEO_CONFIG.colors.orangeRgb;
+    const accentRgb = GEO_CONFIG.colors.orangeRgb;
 
-    // Smoothed music energy
     const hasMusicInput = settings.musicReactive && this.audio.isConnected && this._smoothEnergy > 0.01;
-    const bassE = hasMusicInput ? this._smoothBass * cfg.musicMultiplier : 0;
+    const bassE = hasMusicInput ? clamp(this._smoothBass * cfg.musicMultiplier, 0, 1) : 0;
 
     ctx.save();
     ctx.translate(offset.x, offset.y);
 
     for (let ci = 0; ci < this._circles.length; ci++) {
       const c = this._circles[ci];
+      const cx = W * c.xRatio;
+      const cy = H * c.yRatio;
 
-      // ── Idle breathing (always active, ~8s period) ──
-      const breathPhase = this._time * cfg.breathSpeed * Math.PI * 2 + c.phase;
-      const idleBreath = Math.sin(breathPhase) * 0.5 + 0.5; // 0–1
-      const idleAmount = lerp(cfg.breathScale[0], cfg.breathScale[1], idleBreath);
+      const breathPhase = (this._time / cfg.breathePeriod) * Math.PI * 2 + c.phase;
+      const idleBreath = Math.sin(breathPhase);
+      const audioBreathWeight = hasMusicInput ? 0.45 + bassE * 0.55 : 0.28;
+      const breathScale = 1 + idleBreath * cfg.breatheAmp * audioBreathWeight;
+      const outerR = c.baseRadius * breathScale;
 
-      // ── Music-driven radius (bass only, smoothed) ──
-      const musicRadius = bassE * cfg.bassRadiusAmp;
-      const musicBlend = clamp(this._smoothEnergy * 4, 0, 1);
-      const radiusMod = 1 + lerp(idleAmount, musicRadius + idleAmount * 0.5, hasMusicInput ? musicBlend : 0);
-      const outerR = c.baseRadius * radiusMod;
-
-      // ── Inner glow (restrained) ──
-      const glowAlpha = cfg.ringGlowOpacity * (0.5 + idleBreath * 0.3 + bassE * 0.2);
+      const glowAlpha = cfg.ringGlowOpacity * (0.45 + bassE * 1.2);
       const glowR = outerR * cfg.ringGlowSpread;
-      const glowGrad = ctx.createRadialGradient(c.cx, c.cy, outerR * 0.5, c.cx, c.cy, glowR);
-      glowGrad.addColorStop(0, `rgba(${rgb[0]},${rgb[1]},${rgb[2]},${clamp(glowAlpha, 0, 0.25)})`);
-      glowGrad.addColorStop(0.7, `rgba(${rgb[0]},${rgb[1]},${rgb[2]},${clamp(glowAlpha * 0.2, 0, 0.06)})`);
-      glowGrad.addColorStop(1, `rgba(${rgb[0]},${rgb[1]},${rgb[2]},0)`);
+      const glowGrad = ctx.createRadialGradient(cx, cy, outerR * 0.45, cx, cy, glowR);
+      glowGrad.addColorStop(0, `rgba(${accentRgb[0]},${accentRgb[1]},${accentRgb[2]},${clamp(glowAlpha, 0.02, 0.2)})`);
+      glowGrad.addColorStop(0.7, `rgba(${accentRgb[0]},${accentRgb[1]},${accentRgb[2]},${clamp(glowAlpha * 0.18, 0.01, 0.06)})`);
+      glowGrad.addColorStop(1, `rgba(${accentRgb[0]},${accentRgb[1]},${accentRgb[2]},0)`);
       ctx.fillStyle = glowGrad;
       ctx.beginPath();
-      ctx.arc(c.cx, c.cy, glowR, 0, Math.PI * 2);
+      ctx.arc(cx, cy, glowR, 0, Math.PI * 2);
       ctx.fill();
 
-      // ── Single outer ring (ONE ring, thick, prominent) ──
-      const ringStrokeVar = hasMusicInput ? bassE * 1.0 : idleBreath * 0.4;
-      ctx.strokeStyle = `rgba(${rgb[0]},${rgb[1]},${rgb[2]},${clamp(cfg.ringOpacity, 0.25, 0.60)})`;
-      ctx.lineWidth = cfg.ringStrokeWidth + ringStrokeVar;
+      const ringAlpha = clamp(cfg.ringOpacity + bassE * 0.22, 0.2, 0.7);
+      ctx.strokeStyle = `rgba(${accentRgb[0]},${accentRgb[1]},${accentRgb[2]},${ringAlpha})`;
+      ctx.lineWidth = cfg.ringStrokeWidth + bassE * 2.0;
       ctx.beginPath();
-      ctx.arc(c.cx, c.cy, outerR, 0, Math.PI * 2);
+      ctx.arc(cx, cy, outerR, 0, Math.PI * 2);
       ctx.stroke();
 
-      // ── Inner geometry lines (straight lines only, NO arcs/circles) ──
-      const insideAlpha = cfg.insideOpacity + (hasMusicInput ? bassE * 0.06 : idleBreath * 0.04);
-      ctx.strokeStyle = `rgba(${rgb[0]},${rgb[1]},${rgb[2]},${clamp(insideAlpha, 0.08, 0.35)})`;
+      const spin = c.spin;
+      const edgePts = c.edgeAngles.map((angle) => {
+        const a = angle + spin;
+        return {
+          x: cx + Math.cos(a) * outerR,
+          y: cy + Math.sin(a) * outerR,
+        };
+      });
+
+      const insideAlpha = cfg.insideOpacity + (hasMusicInput ? bassE * 0.16 : (idleBreath * 0.5 + 0.5) * 0.05);
+      ctx.strokeStyle = `rgba(${accentRgb[0]},${accentRgb[1]},${accentRgb[2]},${clamp(insideAlpha, 0.08, 0.34)})`;
       ctx.lineWidth = cfg.insideStrokeWidth;
 
-      // Compute edge point positions on the ring
-      const edgePts = c.edgeAngles.map((angle) => ({
-        x: c.cx + Math.cos(angle) * outerR,
-        y: c.cy + Math.sin(angle) * outerR,
-      }));
-
-      // Draw edge-to-edge connections (geometric mesh)
       for (const [a, b] of c.connections) {
         if (a < edgePts.length && b < edgePts.length) {
           ctx.beginPath();
@@ -538,23 +551,21 @@ export class GeometryRenderer {
         }
       }
 
-      // Draw center-to-edge radial lines (if enabled)
-      if (cfg.insideCenterLines) {
-        const centerAlpha = clamp(insideAlpha * 0.7, 0.06, 0.25);
-        ctx.strokeStyle = `rgba(${rgb[0]},${rgb[1]},${rgb[2]},${centerAlpha})`;
-        ctx.lineWidth = cfg.insideStrokeWidth * 0.8;
+      if (c.useCenterLines) {
+        const centerAlpha = clamp(insideAlpha * 0.68, 0.06, 0.24);
+        ctx.strokeStyle = `rgba(${accentRgb[0]},${accentRgb[1]},${accentRgb[2]},${centerAlpha})`;
+        ctx.lineWidth = cfg.insideStrokeWidth * 0.82;
         for (const pt of edgePts) {
           ctx.beginPath();
-          ctx.moveTo(c.cx, c.cy);
+          ctx.moveTo(cx, cy);
           ctx.lineTo(pt.x, pt.y);
           ctx.stroke();
         }
       }
 
-      // Small center dot
-      ctx.fillStyle = `rgba(${rgb[0]},${rgb[1]},${rgb[2]},${clamp(cfg.ringOpacity * 0.5, 0.1, 0.3)})`;
+      ctx.fillStyle = `rgba(${accentRgb[0]},${accentRgb[1]},${accentRgb[2]},${clamp(cfg.ringOpacity * 0.45, 0.08, 0.25)})`;
       ctx.beginPath();
-      ctx.arc(c.cx, c.cy, 2.5, 0, Math.PI * 2);
+      ctx.arc(cx, cy, 2.2, 0, Math.PI * 2);
       ctx.fill();
     }
 

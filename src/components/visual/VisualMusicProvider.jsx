@@ -4,6 +4,8 @@ import { createContext, useContext, useEffect, useMemo, useRef, useState } from 
 
 const MUSIC_MUTED_KEY = "ta_portfolio_music_muted";
 const MUSIC_UNLOCKED_KEY = "ta_portfolio_music_unlocked";
+const MUSIC_VOLUME_KEY = "ta_portfolio_music_volume";
+const DEFAULT_VOLUME = 0.3;
 
 const VisualMusicContext = createContext(null);
 
@@ -14,10 +16,21 @@ function getSavedBool(key, fallback) {
   return value === "true";
 }
 
+function getSavedVolume(key, fallback) {
+  if (typeof window === "undefined") return fallback;
+  const raw = window.localStorage.getItem(key);
+  if (raw === null) return fallback;
+
+  const parsed = Number(raw);
+  if (!Number.isFinite(parsed)) return fallback;
+  return Math.max(0, Math.min(1, parsed));
+}
+
 export function VisualMusicProvider({ children }) {
   const audioRef = useRef(null);
   const [isMuted, setIsMuted] = useState(true);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [volume, setVolumeState] = useState(DEFAULT_VOLUME);
   const [showEnablePrompt, setShowEnablePrompt] = useState(false);
 
   const syncAudioState = () => {
@@ -25,6 +38,7 @@ export function VisualMusicProvider({ children }) {
     if (!audio) return;
     setIsPlaying(!audio.paused);
     setIsMuted(audio.muted);
+    setVolumeState(audio.volume);
   };
 
   const tryAutoplay = async () => {
@@ -49,6 +63,10 @@ export function VisualMusicProvider({ children }) {
     const savedMuted = getSavedBool(MUSIC_MUTED_KEY, false);
     audio.muted = savedMuted;
     setIsMuted(savedMuted);
+
+    const savedVolume = getSavedVolume(MUSIC_VOLUME_KEY, DEFAULT_VOLUME);
+    audio.volume = savedVolume;
+    setVolumeState(savedVolume);
 
     const savedUnlocked = getSavedBool(MUSIC_UNLOCKED_KEY, false);
     if (!savedMuted) {
@@ -96,15 +114,27 @@ export function VisualMusicProvider({ children }) {
     }
   };
 
+  const setVolume = (nextVolume) => {
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    const clamped = Math.max(0, Math.min(1, Number(nextVolume) || 0));
+    audio.volume = clamped;
+    setVolumeState(clamped);
+    window.localStorage.setItem(MUSIC_VOLUME_KEY, String(clamped));
+  };
+
   const value = useMemo(
     () => ({
       isMuted,
       isPlaying,
+      volume,
+      setVolume,
       toggleMute,
       showEnablePrompt,
       tryAutoplay,
     }),
-    [isMuted, isPlaying, showEnablePrompt]
+    [isMuted, isPlaying, volume, showEnablePrompt]
   );
 
   return (

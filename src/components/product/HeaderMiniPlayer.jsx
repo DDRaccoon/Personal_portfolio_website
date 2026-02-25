@@ -1,11 +1,13 @@
 "use client";
 
 import Icon from "../ui/Icon";
+import { useLanguage, useSiteCopy } from "../i18n/LanguageProvider";
 import { useVisualMusic } from "../visual/VisualMusicProvider";
-import { siteCopy } from "../../content/copy/en";
 
 export default function HeaderMiniPlayer() {
-  const { isMuted, isPlaying, toggleMute, showEnablePrompt, tryAutoplay } = useVisualMusic();
+  const { locale, toggleLocale } = useLanguage();
+  const siteCopy = useSiteCopy();
+  const { isMuted, isPlaying, volume, setVolume, toggleMute, showEnablePrompt, tryAutoplay } = useVisualMusic();
 
   return (
     <header
@@ -54,6 +56,23 @@ export default function HeaderMiniPlayer() {
           )}
         </button>
 
+        <div className="flex items-center pr-2">
+          <input
+            type="range"
+            min="0"
+            max="100"
+            step="1"
+            value={Math.round(volume * 100)}
+            onChange={(event) => setVolume(Number(event.target.value) / 100)}
+            aria-label={siteCopy.music.volumeLabel}
+            className="h-1 w-24 cursor-pointer appearance-none rounded-full"
+            style={{
+              background: "linear-gradient(90deg, rgba(255,122,24,0.9) 0%, rgba(255,122,24,0.9) var(--volume), rgba(255,255,255,0.15) var(--volume), rgba(255,255,255,0.15) 100%)",
+              "--volume": `${Math.round(volume * 100)}%`,
+            }}
+          />
+        </div>
+
         {/* Track info + playing indicator */}
         <div className="flex items-center gap-2 overflow-hidden">
           {isPlaying && !isMuted ? (
@@ -82,9 +101,24 @@ export default function HeaderMiniPlayer() {
             className="truncate text-xs tracking-wide"
             style={{ color: "rgba(255,255,255,0.45)", maxWidth: 200 }}
           >
-            {isMuted ? "Sound off" : isPlaying ? "Now playing" : "Paused"}
+            {isMuted ? siteCopy.music.soundOff : isPlaying ? siteCopy.music.nowPlaying : siteCopy.music.paused}
           </span>
         </div>
+
+        <button
+          type="button"
+          onClick={toggleLocale}
+          aria-label={siteCopy.music.languageToggleLabel}
+          title={siteCopy.music.languageToggleLabel}
+          className="ml-auto h-8 rounded-full border px-3 text-xs tracking-wide transition-colors"
+          style={{
+            borderColor: "rgba(255,122,24,0.4)",
+            color: "#FFB58C",
+            background: "rgba(255,122,24,0.08)",
+          }}
+        >
+          {locale === "en" ? "EN" : "中文"}
+        </button>
       </div>
 
       {/* Enable sound prompt */}

@@ -2,18 +2,20 @@
 
 export default function ImageBlock({ block }) {
   return (
-    <div className="space-y-3">
-      <img 
-        src={block.src} 
-        alt={block.alt || "Work image"}
-        className="w-full rounded-lg border border-white/10 bg-black/40"
-        loading="lazy"
-      />
+    <figure className="space-y-3">
+      <div className="overflow-hidden rounded-xl border border-white/10">
+        <img 
+          src={block.src} 
+          alt={block.alt || "Work image"}
+          className="w-full object-cover transition-transform duration-500 hover:scale-[1.02]"
+          loading="lazy"
+        />
+      </div>
       {block.caption && (
-        <p className="text-center text-sm text-white/60">
+        <figcaption className="text-center text-[13px] tracking-wide text-white/45">
           {block.caption}
-        </p>
+        </figcaption>
       )}
-    </div>
+    </figure>
   );
 }

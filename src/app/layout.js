@@ -1,5 +1,6 @@
 import "./globals.css";
 import VisualShell from "../components/visual/VisualShell";
+import { LanguageProvider } from "../components/i18n/LanguageProvider";
 
 export const metadata = {
   title: "SiCheng Chen | Technical Artist",
@@ -10,9 +11,11 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body className="antialiased min-h-screen bg-black text-white">
-        <VisualShell>
-          <div className="relative z-10 min-h-screen">{children}</div>
-        </VisualShell>
+        <LanguageProvider>
+          <VisualShell>
+            <div className="relative z-10 min-h-screen">{children}</div>
+          </VisualShell>
+        </LanguageProvider>
       </body>
     </html>
   );

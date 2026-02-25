@@ -4,12 +4,15 @@ import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
-import { siteCopy } from "../../content/copy/en";
-import { CATEGORY_IDS, DEFAULT_CATEGORY, WORK_CATEGORIES } from "../../constants/workCategories";
+import { useLanguage, useSiteCopy } from "../i18n/LanguageProvider";
+import { CATEGORY_IDS, DEFAULT_CATEGORY } from "../../constants/workCategories";
 import { getAllWorks, WORKS_UPDATED_EVENT } from "../../lib/worksStore";
 import WorksTabs from "../works/WorksTabs";
 
-function WorkCard({ work }) {
+function WorkCard({ work, locale, copy }) {
+  const title = locale === "zh" ? work.title_zh || work.title_en : work.title_en;
+  const summary = locale === "zh" ? work.summary_zh || work.summary_en : work.summary_en;
+
   return (
     <Link
       href={`/works/${work.slug}`}
@@ -19,7 +22,7 @@ function WorkCard({ work }) {
       <div className="relative aspect-[16/9] overflow-hidden bg-zinc-950">
         <img
           src={work.cover}
-          alt={work.title_en}
+          alt={title}
           className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
           loading="lazy"
         />
@@ -31,7 +34,7 @@ function WorkCard({ work }) {
             className="rounded-full border border-[#FF7A18]/70 px-5 py-2 text-sm font-semibold tracking-widest text-white"
             style={{ background: "rgba(255,122,24,0.15)", backdropFilter: "blur(8px)" }}
           >
-            VIEW DETAILS
+            {copy.works.viewDetails}
           </span>
         </div>
         {/* year badge */}
@@ -46,9 +49,9 @@ function WorkCard({ work }) {
         <h3
           className="text-lg font-semibold text-white transition-colors duration-300 group-hover:text-[#FFB58C]"
         >
-          {work.title_en}
+          {title}
         </h3>
-        <p className="line-clamp-2 text-sm leading-relaxed text-white/60">{work.summary_en}</p>
+        <p className="line-clamp-2 text-sm leading-relaxed text-white/60">{summary}</p>
         {work.tags && work.tags.length > 0 && (
           <div className="flex flex-wrap gap-1.5 pt-1">
             {work.tags.slice(0, 3).map((tag) => (
@@ -67,7 +70,7 @@ function WorkCard({ work }) {
   );
 }
 
-function EmptyCategoryCard({ category }) {
+function EmptyCategoryCard({ category, copy }) {
   return (
     <Link
       href={`/editor/new?cat=${category}`}
@@ -77,17 +80,19 @@ function EmptyCategoryCard({ category }) {
         className="flex h-16 w-16 items-center justify-center rounded-full border border-[#FF7A18]/40 text-3xl text-[#FF7A18] transition-all duration-300 group-hover:border-[#FF7A18] group-hover:shadow-[0_0_20px_rgba(255,122,24,0.3)]"
         style={{ background: "rgba(255,122,24,0.07)" }}
       >
-        {siteCopy.works.emptyStateCta}
+        {copy.works.emptyStateCta}
       </div>
-      <p className="text-base text-white/60 group-hover:text-white/90">{siteCopy.works.emptyStateTitle}</p>
+      <p className="text-base text-white/60 group-hover:text-white/90">{copy.works.emptyStateTitle}</p>
       <span className="rounded-full border border-[#FF7A18]/40 px-4 py-1.5 text-xs tracking-widest text-[#FF7A18] opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-        CREATE NOW
+        {copy.works.createNow}
       </span>
     </Link>
   );
 }
 
 export default function WorksSection() {
+  const { locale } = useLanguage();
+  const siteCopy = useSiteCopy();
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -129,17 +134,22 @@ export default function WorksSection() {
     <section className="w-full pb-20">
       {/* Geometric tabs navigation (orange + black) */}
       <div className="mx-auto w-full max-w-7xl px-4">
-        <WorksTabs activeCategory={activeCategory} onCategoryChange={setCategory} />
+        <WorksTabs
+          activeCategory={activeCategory}
+          onCategoryChange={setCategory}
+          tabs={siteCopy.works.tabs}
+          ariaLabel={siteCopy.works.tabAriaLabel}
+        />
       </div>
 
       {/* Works grid */}
       <div className="mx-auto w-full max-w-7xl px-4 pt-12">
         {filteredWorks.length === 0 ? (
-          <EmptyCategoryCard category={activeCategory} />
+          <EmptyCategoryCard category={activeCategory} copy={siteCopy} />
         ) : (
           <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
             {filteredWorks.map((work) => (
-              <WorkCard key={work.id} work={work} />
+              <WorkCard key={work.id} work={work} locale={locale} copy={siteCopy} />
             ))}
           </div>
         )}

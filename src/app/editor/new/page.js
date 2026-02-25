@@ -3,12 +3,14 @@
 import { useMemo, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
+import { useSiteCopy } from "../../../components/i18n/LanguageProvider";
 import WorkEditor from "../../../components/editor/WorkEditor";
 import { CATEGORY_IDS, DEFAULT_CATEGORY } from "../../../constants/workCategories";
 
 function NewWorkPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const siteCopy = useSiteCopy();
 
   const category = useMemo(() => {
     const cat = searchParams.get("cat") || DEFAULT_CATEGORY;
@@ -22,8 +24,8 @@ function NewWorkPageContent() {
   return (
     <main className="mx-auto min-h-screen w-full max-w-5xl px-4 py-8">
       <div className="mb-8 space-y-2">
-        <h1 className="text-3xl font-semibold text-white">Create Work</h1>
-        <p className="text-sm text-white/60">Build a new portfolio entry with structured blocks.</p>
+        <h1 className="text-3xl font-semibold text-white">{siteCopy.common.createWork}</h1>
+        <p className="text-sm text-white/60">{siteCopy.common.createWorkDesc}</p>
       </div>
 
       <WorkEditor

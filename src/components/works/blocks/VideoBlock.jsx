@@ -6,8 +6,8 @@ export default function VideoBlock({ block }) {
   const [isPlaying, setIsPlaying] = useState(false);
 
   return (
-    <div className="space-y-4">
-      <div className="relative">
+    <figure className="space-y-3">
+      <div className="relative overflow-hidden rounded-xl border border-white/10">
         <video 
           src={block.src}
           poster={block.poster}
@@ -16,14 +16,14 @@ export default function VideoBlock({ block }) {
           loop={block.loop !== false}
           autoPlay={Boolean(block.autoplay)}
           playsInline
-          className="w-full rounded-lg border border-white/10 bg-black/40"
+          className="w-full bg-black"
           onPlay={() => setIsPlaying(true)}
           onPause={() => setIsPlaying(false)}
         />
         {!isPlaying && (
-          <div className="absolute inset-0 flex items-center justify-center">
-            <div className="bg-black/50 rounded-full p-4">
-              <svg className="h-12 w-12 text-white" fill="currentColor" viewBox="0 0 24 24">
+          <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
+            <div className="rounded-full bg-black/60 p-4 backdrop-blur-sm">
+              <svg className="h-10 w-10 text-white/90" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M8 5v14l11-7z"/>
               </svg>
             </div>
@@ -31,10 +31,10 @@ export default function VideoBlock({ block }) {
         )}
       </div>
       {block.caption && (
-        <p className="text-center text-sm text-white/60">
+        <figcaption className="text-center text-[13px] tracking-wide text-white/45">
           {block.caption}
-        </p>
+        </figcaption>
       )}
-    </div>
+    </figure>
   );
 }

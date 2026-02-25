@@ -88,6 +88,15 @@ export class AudioAnalyser {
     return this._connected;
   }
 
+  /**
+   * Resume AudioContext if suspended (call on user interaction).
+   */
+  resume() {
+    if (this._ctx && this._ctx.state === "suspended") {
+      this._ctx.resume().catch(() => {});
+    }
+  }
+
   destroy() {
     if (this._source) {
       try { this._source.disconnect(); } catch (_) {}
