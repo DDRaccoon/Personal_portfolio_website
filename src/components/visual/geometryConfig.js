@@ -13,78 +13,118 @@ export const GEO_CONFIG = {
     whiteRgb: [255, 255, 255],
   },
 
+  // === A) Aurora Gradient Field ===
+  aurora: {
+    enabled: true,
+    blobs: [
+      { color: [27, 42, 107],  x: 0.15, y: 0.25, radius: 0.45 }, // Deep Blue
+      { color: [75, 43, 111],  x: 0.75, y: 0.20, radius: 0.40 }, // Purple
+      { color: [14, 74, 74],   x: 0.55, y: 0.75, radius: 0.38 }, // Teal
+      { color: [90, 44, 12],   x: 0.25, y: 0.80, radius: 0.35 }, // Warm Amber
+    ],
+    intensity: 0.12,          // 0.05–0.18 global alpha multiplier
+    driftSpeed: 0.00008,      // noise speed for position warp (8–20s cycle)
+    driftAmplitude: 0.08,     // how far blobs wander (fraction of canvas)
+    noiseScale: 0.3,          // spatial noise frequency for warp
+    scrollHueShift: 12,       // ±degrees hue shift linked to scroll (0 to disable)
+  },
+
   // === 2.1 Point Field ===
   points: {
-    count: 150,           // 80–250, auto-scaled by perf guard
+    count: 150,
     minAlpha: 0.12,
     maxAlpha: 0.35,
-    radius: 1.5,          // px
-    driftSpeed: 0.15,     // px/frame at 60fps
-    color: "white",       // "white" | "orange"
-    orangeRatio: 0.08,    // 8% of points are orange
+    radius: 1.5,
+    driftSpeed: 0.15,
+    color: "white",
+    orangeRatio: 0.08,
   },
 
   // === 2.2 Line Network ===
   lines: {
-    maxDistance: 120,      // px — connect points within this range
-    maxConnections: 3,     // per point
+    maxDistance: 120,
+    maxConnections: 3,
     lineWidth: 0.5,
     minAlpha: 0.06,
     maxAlpha: 0.18,
-    orangeHighlightRatio: 0.08, // 8% of lines get orange tint
+    orangeHighlightRatio: 0.08,
   },
 
   // === 2.3 Wireframe Mountains ===
   mountains: {
-    layers: 4,            // number of terrain layers
-    heightRatio: 0.30,    // occupy bottom 30% of canvas
-    segmentCount: 80,     // vertices per layer
-    noiseScale: 0.004,    // perlin noise frequency
-    noiseSpeed: 0.0003,   // animation speed
+    layers: 4,
+    heightRatio: 0.30,
+    segmentCount: 80,
+    noiseScale: 0.004,
+    noiseSpeed: 0.0003,
     lineWidth: 0.8,
-    baseAlpha: 0.12,      // back layers more transparent
-    frontAlpha: 0.25,     // front layer
+    baseAlpha: 0.12,
+    frontAlpha: 0.25,
     color: "white",
   },
 
   // === 2.4 Streak Meteors ===
   meteors: {
-    interval: [2000, 6000], // ms between meteors
-    speed: [4, 8],          // px/frame
-    length: [60, 160],      // trail length px
-    headSize: 3,            // glow head radius
+    interval: [2000, 6000],
+    speed: [4, 8],
+    length: [60, 160],
+    headSize: 3,
     lineWidth: 1.5,
     color: "orange",
-    angle: -30,             // degrees from horizontal (top-right to bottom-left)
+    angle: -30,
     glowRadius: 12,
   },
 
-  // === 2.5 Music-reactive Circles ===
+  // === B) Music-reactive Circles (enhanced — HUD/Orbital style) ===
   circles: {
-    count: 2,               // 1–3 large circles
-    baseRadius: [120, 200],  // px — range for each circle
-    lineWidth: 1,
-    alpha: 0.15,
-    breathScale: [0.02, 0.06], // ±2%–6% radius variation
-    breathSpeed: 0.02,          // idle breathing speed
-    musicMultiplier: 1.5,       // how much music energy amplifies
+    count: 2,                    // 1–3 large circles
+    baseRadius: [140, 220],      // px — larger for more presence
+    stroke: 2.2,                 // 1.5–3px (clearly thicker than line network 0.5px)
+    alpha: 0.22,                 // base stroke alpha
+    fillOpacity: 0.04,           // 0.03–0.08 semi-transparent fill
+    glowOpacity: 0.14,           // 0.08–0.22 inner glow
+    glowSpread: 1.35,            // glow radius = ring radius × this
+
+    // Breathing (idle — no music)
+    breathSpeed: 0.12,           // cycles per second (period ~8s)
+    breathScale: [0.03, 0.07],   // idle radius variation ±3%–7%
+
+    // Music reactivity (stronger)
+    bassRadiusAmp: 0.08,         // 0.04–0.10 bass → radius
+    midFlickerAmp: 0.04,         // 0.02–0.06 mid → tick/detail flicker
+    musicMultiplier: 2.5,        // overall music energy scale
+    musicLerp: 0.12,             // smooth factor (prevents jitter)
+
+    // Concentric rings
+    concentricRings: 4,
+    ringGap: 22,
+
+    // HUD tick marks (orbital detail)
+    tickCount: 36,               // small tick marks around outermost ring
+    tickLength: 6,               // px
+    tickWidth: 1,
+    tickAlpha: 0.18,
+
+    // Positioning — avoid text, prefer mid-right / mid-left
+    positions: [
+      { xRatio: 0.72, yRatio: 0.38 },  // circle 1: right-center
+      { xRatio: 0.22, yRatio: 0.62 },  // circle 2: left-lower
+    ],
+
     color: "orange",
-    concentricRings: 3,         // rings per circle
-    ringGap: 18,                // px between concentric rings
   },
 
-  // === 3.1 Mouse Parallax ===
+  // === 3 Parallax ===
   parallax: {
     mouse: {
-      far: 4,      // px max displacement
-      mid: 10,
+      far: 4,
+      mid: 14,       // ↑ from 10 → more obvious circle movement
       near: 16,
-      lerp: 0.06,  // easeOut interpolation factor
+      lerp: 0.06,
     },
-    // === 3.2 Scroll Parallax ===
     scroll: {
-      far: 0.2,    // multiplier of scroll position
-      mid: 0.45,
+      far: 0.2,
+      mid: 0.55,     // ↑ from 0.45
       near: 0.9,
       lerp: 0.08,
     },
@@ -95,20 +135,17 @@ export const GEO_CONFIG = {
     fpsThreshold: 30,
     degradeAfterMs: 2000,
     levels: [
-      // level 0: full quality (default)
-      { pointCount: 150, linesEnabled: true, meteorsEnabled: true, musicReactive: true },
-      // level 1: reduce particles + lines
-      { pointCount: 80,  linesEnabled: true, meteorsEnabled: true, musicReactive: true },
-      // level 2: disable lines + reduce meteors
-      { pointCount: 60,  linesEnabled: false, meteorsEnabled: true, musicReactive: false },
-      // level 3: minimal — static dots only
-      { pointCount: 30,  linesEnabled: false, meteorsEnabled: false, musicReactive: false },
+      { pointCount: 150, linesEnabled: true,  meteorsEnabled: true,  musicReactive: true,  auroraEnabled: true  },
+      { pointCount: 80,  linesEnabled: true,  meteorsEnabled: true,  musicReactive: true,  auroraEnabled: true  },
+      { pointCount: 60,  linesEnabled: false, meteorsEnabled: true,  musicReactive: false, auroraEnabled: false },
+      { pointCount: 30,  linesEnabled: false, meteorsEnabled: false, musicReactive: false, auroraEnabled: false },
     ],
   },
 
-  // === 4.3 Content Safety Zone ===
+  // === 4.3 Content Safety Zone (stronger vignette) ===
   safetyZone: {
-    vignetteAlpha: 0.55,    // center darkening strength
-    vignetteRadius: 0.45,   // 0=center, 1=edge (how far the clear zone extends)
+    vignetteStrength: 0.50,   // 0.35–0.65 center-area darkening
+    vignetteRadius: 0.40,
+    edgeDarken: 0.15,         // extra darkening at screen edges
   },
 };
