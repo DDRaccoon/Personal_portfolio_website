@@ -1,0 +1,240 @@
+/* ═══════════════════════════════════════════════════════
+   WorksTabs — Geometric Navigation (Orange + Black)
+   ═══════════════════════════════════════════════════════ */
+
+.works-tabs {
+  position: relative;
+  display: flex;
+  width: 100%;
+  height: 80px;
+  background: #000;
+  overflow: visible;
+}
+
+/* Subtle grid lines behind all tabs */
+.works-tabs__grid-bg {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    repeating-linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0.03) 0px,
+      rgba(255, 255, 255, 0.03) 1px,
+      transparent 1px,
+      transparent 60px
+    ),
+    repeating-linear-gradient(
+      0deg,
+      rgba(255, 255, 255, 0.03) 0px,
+      rgba(255, 255, 255, 0.03) 1px,
+      transparent 1px,
+      transparent 60px
+    );
+  z-index: 0;
+}
+
+/* ── Individual Tab ── */
+
+.works-tab {
+  position: relative;
+  flex: 1 1 0%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 16px;
+  border: none;
+  cursor: pointer;
+  background: transparent;
+  outline: none;
+  z-index: 1;
+  transition: background 200ms ease-out;
+
+  /* Thin orange outline via box-shadow (avoids layout shift) */
+  box-shadow:
+    inset 0 1px 0 rgba(255, 122, 24, 0.12),
+    inset 0 -1px 0 rgba(255, 122, 24, 0.12),
+    inset 1px 0 0 rgba(255, 122, 24, 0.08),
+    inset -1px 0 0 rgba(255, 122, 24, 0.08);
+
+  /* Trapezoid / angled clip (subtle angle) */
+  clip-path: polygon(
+    6px 0%,
+    100% 0%,
+    calc(100% - 6px) 100%,
+    0% 100%
+  );
+}
+
+.works-tab:hover {
+  background: rgba(255, 122, 24, 0.04);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 122, 24, 0.25),
+    inset 0 -1px 0 rgba(255, 122, 24, 0.25),
+    inset 1px 0 0 rgba(255, 122, 24, 0.18),
+    inset -1px 0 0 rgba(255, 122, 24, 0.18);
+}
+
+/* Focus ring — subtle orange outline for keyboard */
+.works-tab:focus-visible {
+  outline: 1.5px solid rgba(255, 122, 24, 0.6);
+  outline-offset: -2px;
+}
+
+/* ── Active Tab ── */
+
+.works-tab--active {
+  background: rgba(255, 122, 24, 0.06);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 122, 24, 0.35),
+    inset 0 -2px 0 #FF7A18,
+    inset 1px 0 0 rgba(255, 122, 24, 0.22),
+    inset -1px 0 0 rgba(255, 122, 24, 0.22);
+}
+
+.works-tab--active:hover {
+  background: rgba(255, 122, 24, 0.08);
+}
+
+/* ── Bottom glow strip (active only) ── */
+
+.works-tab__glow {
+  position: absolute;
+  bottom: 0;
+  left: 10%;
+  right: 10%;
+  height: 1px;
+  background: #FF7A18;
+  box-shadow:
+    0 0 8px 2px rgba(255, 122, 24, 0.35),
+    0 0 20px 4px rgba(255, 122, 24, 0.15);
+  border-radius: 1px;
+  z-index: 2;
+}
+
+/* ── Diagonal separator between tabs ── */
+
+.works-tab__separator {
+  position: absolute;
+  left: -1px;
+  top: 12%;
+  bottom: 12%;
+  width: 1px;
+  background: linear-gradient(
+    to bottom,
+    transparent,
+    rgba(255, 122, 24, 0.18) 30%,
+    rgba(255, 122, 24, 0.18) 70%,
+    transparent
+  );
+  transform: skewX(-8deg);
+  pointer-events: none;
+  z-index: 3;
+}
+
+/* ── Corner tick marks (geometric accent) ── */
+
+.works-tab__corner {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  pointer-events: none;
+  z-index: 3;
+}
+
+.works-tab__corner--tl {
+  top: 6px;
+  left: 10px;
+  border-top: 1px solid rgba(255, 122, 24, 0.18);
+  border-left: 1px solid rgba(255, 122, 24, 0.18);
+}
+
+.works-tab__corner--tr {
+  top: 6px;
+  right: 10px;
+  border-top: 1px solid rgba(255, 122, 24, 0.18);
+  border-right: 1px solid rgba(255, 122, 24, 0.18);
+}
+
+.works-tab__corner--bl {
+  bottom: 6px;
+  left: 10px;
+  border-bottom: 1px solid rgba(255, 122, 24, 0.18);
+  border-left: 1px solid rgba(255, 122, 24, 0.18);
+}
+
+.works-tab__corner--br {
+  bottom: 6px;
+  right: 10px;
+  border-bottom: 1px solid rgba(255, 122, 24, 0.18);
+  border-right: 1px solid rgba(255, 122, 24, 0.18);
+}
+
+/* Active tab — brighter corners */
+.works-tab--active .works-tab__corner--tl,
+.works-tab--active .works-tab__corner--tr,
+.works-tab--active .works-tab__corner--bl,
+.works-tab--active .works-tab__corner--br {
+  border-color: rgba(255, 122, 24, 0.40);
+}
+
+/* ── Label ── */
+
+.works-tab__label {
+  position: relative;
+  z-index: 2;
+  font-size: clamp(0.6rem, 1.3vw, 0.85rem);
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.45);
+  transition: color 180ms ease-out, text-shadow 180ms ease-out;
+  white-space: nowrap;
+  user-select: none;
+}
+
+.works-tab:hover .works-tab__label {
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.works-tab--active .works-tab__label {
+  color: #FF7A18;
+  text-shadow:
+    0 0 10px rgba(255, 122, 24, 0.3),
+    0 0 24px rgba(255, 122, 24, 0.12);
+}
+
+/* ═══════════════════════════════════
+   Responsive — Mobile
+   ═══════════════════════════════════ */
+
+@media (max-width: 768px) {
+  .works-tabs {
+    height: 64px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none; /* Firefox */
+  }
+
+  .works-tabs::-webkit-scrollbar {
+    display: none;
+  }
+
+  .works-tab {
+    flex: 0 0 auto;
+    min-width: 160px;
+    padding: 0 20px;
+    /* Remove clip-path on mobile for cleaner scroll */
+    clip-path: none;
+  }
+
+  .works-tab__label {
+    font-size: 0.65rem;
+    letter-spacing: 0.1em;
+  }
+
+  .works-tab__corner {
+    display: none;
+  }
+}

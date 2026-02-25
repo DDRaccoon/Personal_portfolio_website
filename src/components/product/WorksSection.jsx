@@ -7,6 +7,7 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { siteCopy } from "../../content/copy/en";
 import { CATEGORY_IDS, DEFAULT_CATEGORY, WORK_CATEGORIES } from "../../constants/workCategories";
 import { getAllWorks, WORKS_UPDATED_EVENT } from "../../lib/worksStore";
+import WorksTabs from "../works/WorksTabs";
 
 function WorkCard({ work }) {
   return (
@@ -126,50 +127,9 @@ export default function WorksSection() {
 
   return (
     <section className="w-full pb-20">
-      {/* Full-width tab buttons — original red stripe style */}
-      <div className="flex w-full">
-        {WORK_CATEGORIES.map((tab) => {
-          const isActive = tab.id === activeCategory;
-          return (
-            <button
-              key={tab.id}
-              type="button"
-              onClick={() => setCategory(tab.id)}
-              className="group relative flex-1 overflow-hidden border-y border-red-900/50 py-7 transition-all duration-500 ease-out"
-              style={{
-                background: isActive
-                  ? "repeating-linear-gradient(45deg, #cc3333 0px, #cc3333 6px, #992222 6px, #992222 22px)"
-                  : "repeating-linear-gradient(45deg, #5c1f1f 0px, #5c1f1f 5px, #3a1010 5px, #3a1010 18px)",
-              }}
-            >
-              {/* frosted overlay */}
-              <span
-                className="absolute inset-0 transition-opacity duration-500"
-                style={{
-                  backdropFilter: "blur(2px)",
-                  background: isActive
-                    ? "rgba(180,40,40,0.22)"
-                    : "rgba(80,10,10,0.45)",
-                }}
-              />
-              {/* hover shine */}
-              <span className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/15 to-transparent transition-transform duration-700 ease-in-out group-hover:translate-x-full" />
-              {/* label */}
-              <span
-                className="relative z-10 block font-bold uppercase tracking-wider"
-                style={{
-                  fontSize: "clamp(0.85rem, 2.5vw, 2rem)",
-                  color: "#ffffff",
-                  textShadow: isActive
-                    ? "0 0 18px rgba(255,255,255,0.85), 0 0 40px rgba(255,120,50,0.5)"
-                    : "0 0 8px rgba(255,255,255,0.4)",
-                }}
-              >
-                {tab.label}
-              </span>
-            </button>
-          );
-        })}
+      {/* Geometric tabs navigation (orange + black) */}
+      <div className="mx-auto w-full max-w-7xl px-4">
+        <WorksTabs activeCategory={activeCategory} onCategoryChange={setCategory} />
       </div>
 
       {/* Works grid */}
