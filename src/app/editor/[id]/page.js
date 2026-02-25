@@ -4,10 +4,19 @@ import { useMemo } from "react";
 import { useParams, useRouter } from "next/navigation";
 
 import { useSiteCopy } from "../../../components/i18n/LanguageProvider";
+import AdminGate from "../../../components/auth/AdminGate";
 import WorkEditor from "../../../components/editor/WorkEditor";
 import { getWorkById } from "../../../lib/worksStore";
 
 export default function EditWorkPage() {
+  return (
+    <AdminGate>
+      <EditWorkPageContent />
+    </AdminGate>
+  );
+}
+
+function EditWorkPageContent() {
   const params = useParams();
   const router = useRouter();
   const siteCopy = useSiteCopy();

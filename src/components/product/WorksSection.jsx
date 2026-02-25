@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 import { useLanguage, useSiteCopy } from "../i18n/LanguageProvider";
+import { useAdmin } from "../auth/AdminProvider";
 import { CATEGORY_IDS, DEFAULT_CATEGORY } from "../../constants/workCategories";
 import { getAllWorks, WORKS_UPDATED_EVENT } from "../../lib/worksStore";
 import WorksTabs from "../works/WorksTabs";
@@ -93,6 +94,7 @@ function EmptyCategoryCard({ category, copy }) {
 export default function WorksSection() {
   const { locale } = useLanguage();
   const siteCopy = useSiteCopy();
+  const { isAdmin } = useAdmin();
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -145,7 +147,13 @@ export default function WorksSection() {
       {/* Works grid */}
       <div className="mx-auto w-full max-w-7xl px-4 pt-12">
         {filteredWorks.length === 0 ? (
-          <EmptyCategoryCard category={activeCategory} copy={siteCopy} />
+          isAdmin ? (
+            <EmptyCategoryCard category={activeCategory} copy={siteCopy} />
+          ) : (
+            <div className="flex min-h-[200px] items-center justify-center">
+              <p className="text-sm text-white/40">No works in this category yet.</p>
+            </div>
+          )
         ) : (
           <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
             {filteredWorks.map((work) => (

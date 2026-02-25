@@ -1,13 +1,29 @@
 "use client";
 
+import { useState } from "react";
 import Icon from "../ui/Icon";
 import { useLanguage, useSiteCopy } from "../i18n/LanguageProvider";
+import { useAdmin } from "../auth/AdminProvider";
 import { useVisualMusic } from "../visual/VisualMusicProvider";
 
 export default function HeaderMiniPlayer() {
   const { locale, toggleLocale } = useLanguage();
   const siteCopy = useSiteCopy();
+  const { isAdmin, login, logout } = useAdmin();
   const { isMuted, isPlaying, volume, setVolume, toggleMute, showEnablePrompt, tryAutoplay } = useVisualMusic();
+  const [pw, setPw] = useState("");
+  const [pwError, setPwError] = useState(false);
+  const [showPwInput, setShowPwInput] = useState(false);
+
+  const handlePwSubmit = () => {
+    if (login(pw)) {
+      setPw("");
+      setPwError(false);
+      setShowPwInput(false);
+    } else {
+      setPwError(true);
+    }
+  };
 
   return (
     <header
@@ -105,20 +121,105 @@ export default function HeaderMiniPlayer() {
           </span>
         </div>
 
-        <button
-          type="button"
-          onClick={toggleLocale}
-          aria-label={siteCopy.music.languageToggleLabel}
-          title={siteCopy.music.languageToggleLabel}
-          className="ml-auto h-8 rounded-full border px-3 text-xs tracking-wide transition-colors"
-          style={{
-            borderColor: "rgba(255,122,24,0.4)",
-            color: "#FFB58C",
-            background: "rgba(255,122,24,0.08)",
-          }}
-        >
-          {locale === "en" ? "EN" : "中文"}
-        </button>
+        {/* Spacer to push right-side controls */}
+        <div className="ml-auto flex items-center gap-2">
+          {/* Admin lock control */}
+          {isAdmin ? (
+            <button
+              type="button"
+              onClick={logout}
+              title="Admin (click to lock)"
+              className="flex h-8 w-8 items-center justify-center rounded-full border transition-colors"
+              style={{
+                borderColor: "rgba(255,122,24,0.6)",
+                color: "#FF7A18",
+                background: "rgba(255,122,24,0.12)",
+              }}
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <rect width="18" height="11" x="3" y="11" rx="2" ry="2" />
+                <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+              </svg>
+            </button>
+          ) : showPwInput ? (
+            <form
+              className="flex items-center gap-1.5"
+              onSubmit={(e) => { e.preventDefault(); handlePwSubmit(); }}
+            >
+              <input
+                type="password"
+                value={pw}
+                onChange={(e) => { setPw(e.target.value); setPwError(false); }}
+                placeholder="Password"
+                autoFocus
+                className="h-7 w-24 rounded border bg-transparent px-2 text-xs text-white/80 placeholder-white/25 outline-none transition-colors"
+                style={{
+                  borderColor: pwError ? "rgba(239,68,68,0.5)" : "rgba(255,122,24,0.3)",
+                }}
+              />
+              <button
+                type="submit"
+                className="flex h-7 w-7 items-center justify-center rounded border transition-colors"
+                style={{
+                  borderColor: "rgba(255,122,24,0.4)",
+                  color: "#FF7A18",
+                  background: "rgba(255,122,24,0.08)",
+                }}
+              >
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="20 6 9 17 4 12" />
+                </svg>
+              </button>
+              <button
+                type="button"
+                onClick={() => { setShowPwInput(false); setPw(""); setPwError(false); }}
+                className="flex h-7 w-7 items-center justify-center rounded border transition-colors"
+                style={{
+                  borderColor: "rgba(255,255,255,0.15)",
+                  color: "rgba(255,255,255,0.4)",
+                }}
+              >
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="18" y1="6" x2="6" y2="18" />
+                  <line x1="6" y1="6" x2="18" y2="18" />
+                </svg>
+              </button>
+            </form>
+          ) : (
+            <button
+              type="button"
+              onClick={() => setShowPwInput(true)}
+              title="Admin login"
+              className="flex h-8 w-8 items-center justify-center rounded-full border transition-colors"
+              style={{
+                borderColor: "rgba(255,255,255,0.15)",
+                color: "rgba(255,255,255,0.35)",
+                background: "transparent",
+              }}
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <rect width="18" height="11" x="3" y="11" rx="2" ry="2" />
+                <path d="M7 11V7a5 5 0 0 1 9.9-1" />
+              </svg>
+            </button>
+          )}
+
+          {/* Language toggle */}
+          <button
+            type="button"
+            onClick={toggleLocale}
+            aria-label={siteCopy.music.languageToggleLabel}
+            title={siteCopy.music.languageToggleLabel}
+            className="h-8 rounded-full border px-3 text-xs tracking-wide transition-colors"
+            style={{
+              borderColor: "rgba(255,122,24,0.4)",
+              color: "#FFB58C",
+              background: "rgba(255,122,24,0.08)",
+            }}
+          >
+            {locale === "en" ? "EN" : "中文"}
+          </button>
+        </div>
       </div>
 
       {/* Enable sound prompt */}

@@ -5,6 +5,7 @@ import { useMemo } from "react";
 import { useParams, useRouter } from "next/navigation";
 
 import { useLanguage, useSiteCopy } from "../../../components/i18n/LanguageProvider";
+import { useAdmin } from "../../../components/auth/AdminProvider";
 import WorkRenderer from "../../../components/works/WorkRenderer";
 import { getWorkBySlug } from "../../../lib/worksStore";
 
@@ -13,6 +14,7 @@ export default function WorkDetailPage() {
   const params = useParams();
   const { locale } = useLanguage();
   const siteCopy = useSiteCopy();
+  const { isAdmin } = useAdmin();
 
   const slug = useMemo(() => String(params.slug || ""), [params.slug]);
   const work = useMemo(() => getWorkBySlug(slug), [slug]);
@@ -49,15 +51,17 @@ export default function WorkDetailPage() {
           </svg>
           {siteCopy.common.back}
         </Link>
-        <Link
-          href={`/editor/${work.id}`}
-          className="inline-flex items-center gap-1.5 rounded-lg border border-[#FF7A18]/35 bg-[#FF7A18]/8 px-3.5 py-2 text-sm text-[#FFB58C] transition-colors hover:bg-[#FF7A18]/15"
-        >
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M17 3a2.85 2.85 0 0 1 4 4L7.5 20.5 2 22l1.5-5.5Z" />
-          </svg>
-          {siteCopy.common.edit}
-        </Link>
+        {isAdmin && (
+          <Link
+            href={`/editor/${work.id}`}
+            className="inline-flex items-center gap-1.5 rounded-lg border border-[#FF7A18]/35 bg-[#FF7A18]/8 px-3.5 py-2 text-sm text-[#FFB58C] transition-colors hover:bg-[#FF7A18]/15"
+          >
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M17 3a2.85 2.85 0 0 1 4 4L7.5 20.5 2 22l1.5-5.5Z" />
+            </svg>
+            {siteCopy.common.edit}
+          </Link>
+        )}
       </nav>
 
       {/* Cover image */}

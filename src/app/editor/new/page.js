@@ -4,6 +4,7 @@ import { useMemo, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
 import { useSiteCopy } from "../../../components/i18n/LanguageProvider";
+import AdminGate from "../../../components/auth/AdminGate";
 import WorkEditor from "../../../components/editor/WorkEditor";
 import { CATEGORY_IDS, DEFAULT_CATEGORY } from "../../../constants/workCategories";
 
@@ -40,8 +41,10 @@ function NewWorkPageContent() {
 
 export default function NewWorkPage() {
   return (
-    <Suspense fallback={<main className="mx-auto min-h-screen w-full max-w-5xl px-4 py-8" />}>
-      <NewWorkPageContent />
-    </Suspense>
+    <AdminGate>
+      <Suspense fallback={<main className="mx-auto min-h-screen w-full max-w-5xl px-4 py-8" />}>
+        <NewWorkPageContent />
+      </Suspense>
+    </AdminGate>
   );
 }
