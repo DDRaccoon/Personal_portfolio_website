@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 
-import { createWork, updateWork } from "../../lib/worksStore";
+import { createWork, updateWork, uploadImageFile } from "../../lib/worksStore";
 import { CATEGORY_IDS, DEFAULT_CATEGORY, WORK_CATEGORIES } from "../../constants/workCategories";
 
 // ── Constants ──
@@ -241,17 +241,25 @@ function TextBlockEditor({ block, onChange }) {
   );
 }
 
-function ImageBlockEditor({ block, onChange }) {
+function ImageBlockEditor({ block, onChange, workId }) {
   const fileRef = useRef(null);
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadError, setUploadError] = useState("");
 
-  const handleFile = (e) => {
+  const handleFile = async (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    const reader = new FileReader();
-    reader.onload = () => {
-      onChange({ ...block, src: reader.result, alt: file.name });
-    };
-    reader.readAsDataURL(file);
+    try {
+      setIsUploading(true);
+      setUploadError("");
+      const uploaded = await uploadImageFile(file, { workId });
+      onChange({ ...block, src: uploaded.url, alt: block.alt || file.name });
+    } catch (error) {
+      setUploadError(error.message || "Failed to upload image.");
+    } finally {
+      setIsUploading(false);
+      e.target.value = "";
+    }
   };
 
   return (
@@ -275,14 +283,28 @@ function ImageBlockEditor({ block, onChange }) {
       ) : (
         <button
           type="button"
-          onClick={() => fileRef.current?.click()}
+          onClick={() => {
+            if (!isUploading) {
+              fileRef.current?.click();
+            }
+          }}
           className="flex w-full flex-col items-center gap-2 rounded-lg border-2 border-dashed border-white/15 px-4 py-10 text-white/40 hover:border-[#FF7A18]/30 hover:text-white/60"
         >
           <span className="text-2xl">🖼</span>
-          <span className="text-sm">Click to upload image (PNG, JPG, GIF)</span>
+          <span className="text-sm">{isUploading ? "Uploading to Supabase..." : "Click to upload image (PNG, JPG, GIF)"}</span>
         </button>
       )}
-      <input ref={fileRef} type="file" accept="image/png,image/jpeg,image/gif" className="hidden" onChange={handleFile} />
+      <input
+        ref={fileRef}
+        type="file"
+        accept="image/png,image/jpeg,image/gif,image/webp"
+        className="hidden"
+        onChange={(e) => {
+          void handleFile(e);
+        }}
+      />
+
+      {uploadError && <p className="text-xs text-red-300/80">{uploadError}</p>}
 
       <InlineInput
         value={block.src?.startsWith("data:") ? "" : block.src || ""}
@@ -372,12 +394,12 @@ function VideoBlockEditor({ block, onChange }) {
 
 // ── Block editor dispatcher ──
 
-function BlockEditor({ block, onChange }) {
+function BlockEditor({ block, onChange, workId }) {
   switch (block.type) {
     case "Title": return <TitleBlockEditor block={block} onChange={onChange} />;
     case "Description": return <DescriptionBlockEditor block={block} onChange={onChange} />;
     case "Text": return <TextBlockEditor block={block} onChange={onChange} />;
-    case "Image": return <ImageBlockEditor block={block} onChange={onChange} />;
+    case "Image": return <ImageBlockEditor block={block} onChange={onChange} workId={workId} />;
     case "Video": return <VideoBlockEditor block={block} onChange={onChange} />;
     default: return <p className="text-sm text-white/50">Unknown block type.</p>;
   }
@@ -774,6 +796,7 @@ export default function WorkEditor({
                         <div className="p-2.5">
                           <BlockEditor
                             block={block}
+                            workId={workId}
                             onChange={(next) => updateBlock(index, next)}
                           />
                         </div>

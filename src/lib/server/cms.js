@@ -1,4 +1,5 @@
 const WORKS_TABLE = process.env.SUPABASE_WORKS_TABLE || "works";
+const STORAGE_BUCKET = process.env.SUPABASE_STORAGE_BUCKET || "works-media";
 const ADMIN_COOKIE = "cms_admin";
 
 function getRequiredEnv(name) {
@@ -16,6 +17,10 @@ function getSupabaseBaseUrl() {
 
 function getSupabaseServiceRoleKey() {
   return getRequiredEnv("SUPABASE_SERVICE_ROLE_KEY");
+}
+
+function getStorageBucket() {
+  return STORAGE_BUCKET;
 }
 
 export function toSlug(input) {
@@ -104,9 +109,81 @@ async function supabaseRequest(path, { method = "GET", body, headers = {} } = {}
   return { ok: response.ok, status: response.status, data };
 }
 
+function encodeStoragePath(path) {
+  return path
+    .split("/")
+    .filter(Boolean)
+    .map((segment) => encodeURIComponent(segment))
+    .join("/");
+}
+
+function safePathSegment(value, fallback = "draft") {
+  const normalized = String(value || "")
+    .trim()
+    .replace(/[^a-zA-Z0-9_-]+/g, "-")
+    .replace(/-+/g, "-")
+    .replace(/^-|-$/g, "");
+  return normalized || fallback;
+}
+
+function getPublicStorageUrl(path) {
+  const baseUrl = getSupabaseBaseUrl();
+  const bucket = getStorageBucket();
+  return `${baseUrl}/storage/v1/object/public/${encodeURIComponent(bucket)}/${encodeStoragePath(path)}`;
+}
+
 export function isAdminRequest(request) {
   const cookieValue = request.cookies.get(ADMIN_COOKIE)?.value;
   return cookieValue === "1";
+}
+
+export async function uploadImageToCmsStorage(file, { workId = "draft" } = {}) {
+  if (!file) {
+    throw new Error("Missing file");
+  }
+
+  const bucket = getStorageBucket();
+  const baseUrl = getSupabaseBaseUrl();
+  const serviceRoleKey = getSupabaseServiceRoleKey();
+
+  const ext = (file.name?.split(".").pop() || "png").toLowerCase();
+  const safeExt = ext.replace(/[^a-z0-9]/g, "") || "png";
+  const objectPath = `works/${safePathSegment(workId)}/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${safeExt}`;
+  const encodedPath = encodeStoragePath(objectPath);
+
+  const uploadResponse = await fetch(
+    `${baseUrl}/storage/v1/object/${encodeURIComponent(bucket)}/${encodedPath}`,
+    {
+      method: "POST",
+      headers: {
+        apikey: serviceRoleKey,
+        Authorization: `Bearer ${serviceRoleKey}`,
+        "Content-Type": file.type || "application/octet-stream",
+        "x-upsert": "false",
+      },
+      body: file,
+      cache: "no-store",
+    }
+  );
+
+  const text = await uploadResponse.text();
+  let data = null;
+  if (text) {
+    try {
+      data = JSON.parse(text);
+    } catch {
+      data = text;
+    }
+  }
+
+  if (!uploadResponse.ok) {
+    throw new Error(`Failed to upload image (${uploadResponse.status}): ${JSON.stringify(data)}`);
+  }
+
+  return {
+    path: objectPath,
+    url: getPublicStorageUrl(objectPath),
+  };
 }
 
 export async function listWorksFromCms() {

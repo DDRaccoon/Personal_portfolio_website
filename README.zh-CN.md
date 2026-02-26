@@ -90,15 +90,27 @@ create index if not exists works_updated_at_idx on public.works (updated_at desc
 - `SUPABASE_SERVICE_ROLE_KEY`
 - `CMS_ADMIN_PASSWORD`
 - `SUPABASE_WORKS_TABLE`（可选，默认 `works`）
+- `SUPABASE_STORAGE_BUCKET`（可选，默认 `works-media`）
 
 > `SUPABASE_SERVICE_ROLE_KEY` 必须保密，不能暴露到前端。
 
-### 4）编辑权限机制
+### 4）创建编辑器图片上传 Bucket
+
+在 Supabase 控制台 -> **Storage** 新建一个 Bucket（默认名称：`works-media`），并设置为 **Public**。
+
+编辑器会通过 `/api/uploads/image` 上传图片到该 Bucket，并自动将返回的公开 URL 写入图片块。
+
+### 5）编辑权限机制
 
 - 访客可公开读取作品。
 - 顶部锁按钮会把密码提交到 `/api/admin/session`。
 - 服务端校验成功后会写入 HTTP-only 的 `cms_admin` Cookie。
 - 只有携带该 Cookie 时，`/api/works*` 写接口才允许创建/更新/删除。
+
+### 上传限制
+
+- 上传接口仅支持图片文件。
+- 建议单张图片控制在 4MB 以内，以保证部署平台上更稳定。
 
 ## 项目结构
 

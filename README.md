@@ -90,15 +90,27 @@ Copy `.env.example` to `.env.local`, then fill:
 - `SUPABASE_SERVICE_ROLE_KEY`
 - `CMS_ADMIN_PASSWORD`
 - `SUPABASE_WORKS_TABLE` (optional, default `works`)
+- `SUPABASE_STORAGE_BUCKET` (optional, default `works-media`)
 
 > Keep `SUPABASE_SERVICE_ROLE_KEY` private. Never expose it in client code.
 
-### 4) How auth works for editing
+### 4) Create storage bucket for editor uploads
+
+In Supabase Dashboard -> **Storage**, create a bucket (default name: `works-media`) and make it **Public**.
+
+The editor uploads image files to this bucket via `/api/uploads/image`, then stores the returned public URL in image blocks.
+
+### 5) How auth works for editing
 
 - Visitors can read works via public pages.
 - The header lock input posts the password to `/api/admin/session`.
 - Server sets a secure **HTTP-only cookie** (`cms_admin`) when login succeeds.
 - Admin write operations on `/api/works*` are allowed only when that cookie is present.
+
+### Upload limits
+
+- The upload API enforces image-only uploads.
+- Recommended single image size: under 4MB for smooth deployment-platform compatibility.
 
 ## Project Structure
 
