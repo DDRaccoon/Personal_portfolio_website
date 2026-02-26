@@ -6,7 +6,23 @@ import WorkCard from './WorkCard';
 import { PlusIcon } from '../ui/icons';
 
 export default function WorksGrid({ category = 'full-game' }) {
-  const works = getWorksByCategoryCompat(category);
+  const [works, setWorks] = React.useState([]);
+
+  React.useEffect(() => {
+    let mounted = true;
+
+    const load = async () => {
+      const nextWorks = await getWorksByCategoryCompat(category);
+      if (!mounted) return;
+      setWorks(nextWorks);
+    };
+
+    load();
+
+    return () => {
+      mounted = false;
+    };
+  }, [category]);
 
   // 空态处理
   if (works.length === 0) {

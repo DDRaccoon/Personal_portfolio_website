@@ -12,8 +12,9 @@ import GridBlock from "./GridBlock";
 import CalloutBlock from "./CalloutBlock";
 
 const WIDTH_CLASSES = {
-  full: "max-w-none",
-  half: "max-w-[50%]",
+  full: "w-full",
+  half: "w-full md:w-[calc(50%-0.75rem)]",
+  third: "w-full md:w-[calc(50%-0.75rem)] lg:w-[calc(33.333%-1rem)]",
 };
 
 const ALIGN_MAP = {
@@ -125,10 +126,6 @@ export default function renderBlock(block) {
 
   // Apply block-level width control
   const width = block.width || "full";
-
-  if (width === "full") {
-    return content;
-  }
 
   const widthClass = WIDTH_CLASSES[width] || WIDTH_CLASSES.full;
 

@@ -49,7 +49,56 @@ npm run build
 npm start
 ```
 
-No environment variables are required.
+## CMS Setup (Supabase)
+
+This project now uses **Supabase as a real CMS backend** for works data.
+
+### 1) Create a Supabase project
+
+Create a new project in Supabase and open **SQL Editor**.
+
+### 2) Create the `works` table
+
+Run the following SQL:
+
+```sql
+create table if not exists public.works (
+  id text primary key,
+  slug text unique not null,
+  category text not null,
+  title_en text not null,
+  title_zh text default '',
+  summary_en text not null,
+  summary_zh text default '',
+  cover text not null,
+  tags jsonb not null default '[]'::jsonb,
+  year integer not null,
+  blocks jsonb not null default '[]'::jsonb,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+create index if not exists works_category_idx on public.works (category);
+create index if not exists works_updated_at_idx on public.works (updated_at desc);
+```
+
+### 3) Configure environment variables
+
+Copy `.env.example` to `.env.local`, then fill:
+
+- `NEXT_PUBLIC_SUPABASE_URL`
+- `SUPABASE_SERVICE_ROLE_KEY`
+- `CMS_ADMIN_PASSWORD`
+- `SUPABASE_WORKS_TABLE` (optional, default `works`)
+
+> Keep `SUPABASE_SERVICE_ROLE_KEY` private. Never expose it in client code.
+
+### 4) How auth works for editing
+
+- Visitors can read works via public pages.
+- The header lock input posts the password to `/api/admin/session`.
+- Server sets a secure **HTTP-only cookie** (`cms_admin`) when login succeeds.
+- Admin write operations on `/api/works*` are allowed only when that cookie is present.
 
 ## Project Structure
 
@@ -131,7 +180,8 @@ src/
 
 1. Push to GitHub.
 2. Import the repo in [Vercel](https://vercel.com).
-3. Vercel auto-detects Next.js — done.
+3. Set environment variables in Vercel Project Settings.
+4. Vercel auto-detects Next.js — done.
 
 ### Static Export / Self-Hosted
 

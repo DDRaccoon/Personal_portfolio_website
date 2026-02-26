@@ -1,0 +1,210 @@
+const WORKS_TABLE = process.env.SUPABASE_WORKS_TABLE || "works";
+const ADMIN_COOKIE = "cms_admin";
+
+function getRequiredEnv(name) {
+  const value = process.env[name];
+  if (!value) {
+    throw new Error(`Missing required env var: ${name}`);
+  }
+  return value;
+}
+
+function getSupabaseBaseUrl() {
+  const raw = getRequiredEnv("NEXT_PUBLIC_SUPABASE_URL");
+  return raw.replace(/\/$/, "");
+}
+
+function getSupabaseServiceRoleKey() {
+  return getRequiredEnv("SUPABASE_SERVICE_ROLE_KEY");
+}
+
+export function toSlug(input) {
+  return (input || "")
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "") || `work-${Date.now()}`;
+}
+
+function nowIso() {
+  return new Date().toISOString();
+}
+
+function createId() {
+  return `work-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+}
+
+function normalizeArray(value) {
+  return Array.isArray(value) ? value : [];
+}
+
+function toDbWork(input, { id, slug, createdAt, updatedAt }) {
+  return {
+    id,
+    slug,
+    category: input.category,
+    title_en: input.title_en,
+    title_zh: input.title_zh || "",
+    summary_en: input.summary_en,
+    summary_zh: input.summary_zh || "",
+    cover: input.cover,
+    tags: normalizeArray(input.tags),
+    year: Number(input.year) || new Date().getFullYear(),
+    blocks: normalizeArray(input.blocks),
+    created_at: createdAt,
+    updated_at: updatedAt,
+  };
+}
+
+function fromDbWork(row) {
+  if (!row) return null;
+  return {
+    id: row.id,
+    slug: row.slug,
+    category: row.category,
+    title_en: row.title_en,
+    title_zh: row.title_zh || "",
+    summary_en: row.summary_en,
+    summary_zh: row.summary_zh || "",
+    cover: row.cover,
+    tags: normalizeArray(row.tags),
+    year: row.year,
+    blocks: normalizeArray(row.blocks),
+    createdAt: row.created_at,
+    updatedAt: row.updated_at,
+  };
+}
+
+async function supabaseRequest(path, { method = "GET", body, headers = {} } = {}) {
+  const baseUrl = getSupabaseBaseUrl();
+  const serviceRoleKey = getSupabaseServiceRoleKey();
+
+  const response = await fetch(`${baseUrl}/rest/v1${path}`, {
+    method,
+    headers: {
+      apikey: serviceRoleKey,
+      Authorization: `Bearer ${serviceRoleKey}`,
+      "Content-Type": "application/json",
+      ...headers,
+    },
+    body: body === undefined ? undefined : JSON.stringify(body),
+    cache: "no-store",
+  });
+
+  const text = await response.text();
+  let data = null;
+  if (text) {
+    try {
+      data = JSON.parse(text);
+    } catch {
+      data = text;
+    }
+  }
+
+  return { ok: response.ok, status: response.status, data };
+}
+
+export function isAdminRequest(request) {
+  const cookieValue = request.cookies.get(ADMIN_COOKIE)?.value;
+  return cookieValue === "1";
+}
+
+export async function listWorksFromCms() {
+  const result = await supabaseRequest(`/${WORKS_TABLE}?select=*&order=updated_at.desc,created_at.desc`);
+  if (!result.ok) {
+    throw new Error(`Failed to list works (${result.status}): ${JSON.stringify(result.data)}`);
+  }
+  return Array.isArray(result.data) ? result.data.map(fromDbWork) : [];
+}
+
+export async function getWorkByIdFromCms(id) {
+  const result = await supabaseRequest(`/${WORKS_TABLE}?id=eq.${encodeURIComponent(id)}&select=*&limit=1`);
+  if (!result.ok) {
+    throw new Error(`Failed to get work by id (${result.status}): ${JSON.stringify(result.data)}`);
+  }
+  return result.data?.[0] ? fromDbWork(result.data[0]) : null;
+}
+
+export async function getWorkBySlugFromCms(slug) {
+  const result = await supabaseRequest(`/${WORKS_TABLE}?slug=eq.${encodeURIComponent(slug)}&select=*&limit=1`);
+  if (!result.ok) {
+    throw new Error(`Failed to get work by slug (${result.status}): ${JSON.stringify(result.data)}`);
+  }
+  return result.data?.[0] ? fromDbWork(result.data[0]) : null;
+}
+
+async function ensureUniqueSlug(baseSlug) {
+  const check = await supabaseRequest(`/${WORKS_TABLE}?slug=eq.${encodeURIComponent(baseSlug)}&select=id&limit=1`);
+  if (!check.ok) {
+    throw new Error(`Failed to verify slug (${check.status}): ${JSON.stringify(check.data)}`);
+  }
+  return check.data?.length ? `${baseSlug}-${Date.now()}` : baseSlug;
+}
+
+export async function createWorkInCms(input) {
+  const createdAt = nowIso();
+  const updatedAt = createdAt;
+  const slug = await ensureUniqueSlug(toSlug(input.slug || input.title_en));
+  const payload = toDbWork(input, {
+    id: createId(),
+    slug,
+    createdAt,
+    updatedAt,
+  });
+
+  const result = await supabaseRequest(`/${WORKS_TABLE}`, {
+    method: "POST",
+    body: payload,
+    headers: { Prefer: "return=representation" },
+  });
+
+  if (!result.ok || !result.data?.[0]) {
+    throw new Error(`Failed to create work (${result.status}): ${JSON.stringify(result.data)}`);
+  }
+
+  return fromDbWork(result.data[0]);
+}
+
+export async function updateWorkInCms(id, updates) {
+  const existing = await getWorkByIdFromCms(id);
+  if (!existing) return null;
+
+  const nextSlug = updates.slug || (updates.title_en ? toSlug(updates.title_en) : existing.slug);
+  const merged = {
+    ...existing,
+    ...updates,
+    slug: nextSlug,
+    updatedAt: nowIso(),
+  };
+
+  const payload = toDbWork(merged, {
+    id: existing.id,
+    slug: merged.slug,
+    createdAt: existing.createdAt,
+    updatedAt: merged.updatedAt,
+  });
+
+  const result = await supabaseRequest(`/${WORKS_TABLE}?id=eq.${encodeURIComponent(id)}`, {
+    method: "PATCH",
+    body: payload,
+    headers: { Prefer: "return=representation" },
+  });
+
+  if (!result.ok || !result.data?.[0]) {
+    throw new Error(`Failed to update work (${result.status}): ${JSON.stringify(result.data)}`);
+  }
+
+  return fromDbWork(result.data[0]);
+}
+
+export async function deleteWorkInCms(id) {
+  const result = await supabaseRequest(`/${WORKS_TABLE}?id=eq.${encodeURIComponent(id)}`, {
+    method: "DELETE",
+  });
+
+  if (!result.ok) {
+    throw new Error(`Failed to delete work (${result.status}): ${JSON.stringify(result.data)}`);
+  }
+
+  return true;
+}

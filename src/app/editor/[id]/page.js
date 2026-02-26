@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 
 import { useSiteCopy } from "../../../components/i18n/LanguageProvider";
@@ -20,9 +20,32 @@ function EditWorkPageContent() {
   const params = useParams();
   const router = useRouter();
   const siteCopy = useSiteCopy();
+  const [existingWork, setExistingWork] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   const workId = useMemo(() => String(params.id || ""), [params.id]);
-  const existingWork = useMemo(() => getWorkById(workId), [workId]);
+
+  useEffect(() => {
+    let mounted = true;
+
+    const fetchWork = async () => {
+      setLoading(true);
+      const nextWork = await getWorkById(workId);
+      if (!mounted) return;
+      setExistingWork(nextWork);
+      setLoading(false);
+    };
+
+    fetchWork();
+
+    return () => {
+      mounted = false;
+    };
+  }, [workId]);
+
+  if (loading) {
+    return <main className="mx-auto min-h-screen w-full max-w-5xl px-4 py-8" />;
+  }
 
   if (!existingWork) {
     return (

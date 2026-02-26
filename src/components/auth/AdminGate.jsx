@@ -14,9 +14,10 @@ export default function AdminGate({ children }) {
 
   if (isAdmin) return children;
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (login(password)) {
+    const ok = await login(password);
+    if (ok) {
       setError(false);
     } else {
       setError(true);

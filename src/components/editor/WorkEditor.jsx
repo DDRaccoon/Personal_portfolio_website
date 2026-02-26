@@ -131,20 +131,26 @@ function InlineTextarea({ value, onChange, placeholder, className = "", minRows 
 // ── Block width selector ──
 
 function WidthSelector({ value, onChange }) {
+  const options = [
+    { key: "full", label: "100%" },
+    { key: "half", label: "50%" },
+    { key: "third", label: "33%" },
+  ];
+
   return (
     <div className="flex gap-1">
-      {["full", "half"].map((w) => (
+      {options.map((option) => (
         <button
-          key={w}
+          key={option.key}
           type="button"
-          onClick={() => onChange(w)}
+          onClick={() => onChange(option.key)}
           className={`rounded px-2 py-0.5 text-[10px] uppercase tracking-wider transition-colors ${
-            value === w
+            value === option.key
               ? "bg-[#FF7A18]/20 text-[#FFB58C]"
               : "text-white/40 hover:text-white/60"
           }`}
         >
-          {w === "full" ? "100%" : "50%"}
+          {option.label}
         </button>
       ))}
     </div>
@@ -471,6 +477,16 @@ export default function WorkEditor({
   const timerRef = useRef(null);
 
   const blocks = form.blocks || [];
+  const imageCoverOptions = useMemo(
+    () => blocks
+      .filter((block) => block.type === "Image" && block.src)
+      .map((block, index) => ({
+        id: block.id,
+        src: block.src,
+        label: block.caption || block.alt || `Image ${index + 1}`,
+      })),
+    [blocks]
+  );
 
   const canSave = useMemo(
     () => form.title_en.trim() && form.summary_en.trim() && form.cover.trim(),
@@ -479,14 +495,14 @@ export default function WorkEditor({
 
   // ── Auto-save ──
 
-  const doAutoSave = useCallback(() => {
+  const doAutoSave = useCallback(async () => {
     if (!canSave || mode !== "edit" || !workId) return;
     const payload = {
       ...form,
       category: CATEGORY_IDS.includes(form.category) ? form.category : DEFAULT_CATEGORY,
       year: Number(form.year) || new Date().getFullYear(),
     };
-    const saved = updateWork(workId, payload);
+    const saved = await updateWork(workId, payload);
     if (saved) {
       pushVersion(workId, form);
       setAutoSaveStatus("Saved");
@@ -499,7 +515,9 @@ export default function WorkEditor({
     dirtyRef.current = true;
     if (timerRef.current) clearTimeout(timerRef.current);
     timerRef.current = setTimeout(() => {
-      if (dirtyRef.current) doAutoSave();
+      if (dirtyRef.current) {
+        void doAutoSave();
+      }
     }, AUTOSAVE_MS);
     return () => { if (timerRef.current) clearTimeout(timerRef.current); };
   }, [form, doAutoSave]);
@@ -543,7 +561,7 @@ export default function WorkEditor({
     setTagInput("");
   };
 
-  const submit = () => {
+  const submit = async () => {
     if (!canSave) return;
     const payload = {
       ...form,
@@ -551,7 +569,9 @@ export default function WorkEditor({
       year: Number(form.year) || new Date().getFullYear(),
       blocks,
     };
-    const saved = mode === "edit" ? updateWork(workId, payload) : createWork(payload);
+    const saved = mode === "edit"
+      ? await updateWork(workId, payload)
+      : await createWork(payload);
     if (!saved) { window.alert("Failed to save work."); return; }
     dirtyRef.current = false;
     if (mode === "edit" && workId) pushVersion(workId, form);
@@ -564,7 +584,11 @@ export default function WorkEditor({
 
   // ── Width class map ──
 
-  const widthClass = (w) => (w === "half" ? "max-w-[50%]" : "max-w-none w-full");
+  const widthClass = (w) => {
+    if (w === "half") return "w-full md:w-[calc(50%-0.5rem)]";
+    if (w === "third") return "w-full md:w-[calc(50%-0.5rem)] lg:w-[calc(33.333%-0.75rem)]";
+    return "w-full";
+  };
 
   return (
     <div className="space-y-6">
@@ -609,6 +633,32 @@ export default function WorkEditor({
             className="w-full rounded-md border border-white/15 bg-black/40 px-3 py-2 text-sm text-white outline-none focus:border-[#FF7A18]/70"
           />
         </label>
+
+        {imageCoverOptions.length > 0 && (
+          <div className="space-y-2">
+            <p className="text-xs text-white/55">Choose from images in content blocks</p>
+            <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+              {imageCoverOptions.map((option) => {
+                const active = form.cover === option.src;
+                return (
+                  <button
+                    key={option.id}
+                    type="button"
+                    onClick={() => setForm((prev) => ({ ...prev, cover: option.src }))}
+                    className={`group overflow-hidden rounded-md border text-left transition-colors ${
+                      active
+                        ? "border-[#FF7A18]/70"
+                        : "border-white/15 hover:border-[#FF7A18]/40"
+                    }`}
+                  >
+                    <img src={option.src} alt={option.label} className="h-20 w-full object-cover" />
+                    <p className="truncate px-2 py-1.5 text-xs text-white/70">{option.label}</p>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        )}
 
         <div className="grid gap-4 md:grid-cols-2">
           <label className="block space-y-1 text-sm text-white/80">
@@ -680,12 +730,12 @@ export default function WorkEditor({
               <div
                 ref={provided.innerRef}
                 {...provided.droppableProps}
-                className="space-y-5"
+                className="flex flex-wrap gap-4"
                 style={{ minHeight: 40 }}
               >
                 {blocks.length === 0 && (
                   <p className="rounded-lg border border-dashed border-white/15 py-10 text-center text-sm text-white/40">
-                    Click "+ Add Block" below to start building your page.
+                    Click + Add Block below to start building your page.
                   </p>
                 )}
 
@@ -695,14 +745,13 @@ export default function WorkEditor({
                       <div
                         ref={prov.innerRef}
                         {...prov.draggableProps}
-                        className={`group relative rounded-lg border transition-shadow ${
+                        className={`group relative rounded-lg border transition-shadow ${widthClass(block.width)} ${
                           snapshot.isDragging
                             ? "border-[#FF7A18]/40 shadow-lg shadow-[#FF7A18]/10"
                             : "border-transparent hover:border-white/10"
                         }`}
                         style={{
                           ...prov.draggableProps.style,
-                          marginBottom: 20,
                         }}
                       >
                         {/* ── Block toolbar (visible on hover) ── */}
@@ -722,7 +771,7 @@ export default function WorkEditor({
                         </div>
 
                         {/* ── Block content ── */}
-                        <div className={`${widthClass(block.width)} p-2.5`}>
+                        <div className="p-2.5">
                           <BlockEditor
                             block={block}
                             onChange={(next) => updateBlock(index, next)}
@@ -759,7 +808,9 @@ export default function WorkEditor({
           </button>
           <button
             type="button"
-            onClick={submit}
+            onClick={() => {
+              void submit();
+            }}
             disabled={!canSave}
             className="rounded-md border border-[#FF7A18]/60 bg-[#FF7A18]/15 px-5 py-2 text-sm font-medium text-[#FFB58C] disabled:opacity-50"
           >

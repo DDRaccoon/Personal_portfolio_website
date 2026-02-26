@@ -107,17 +107,16 @@ export default function WorksSection() {
   }, [searchParams]);
 
   useEffect(() => {
-    const syncWorks = () => {
-      setWorks(getAllWorks());
+    const syncWorks = async () => {
+      const nextWorks = await getAllWorks();
+      setWorks(nextWorks);
     };
 
     syncWorks();
     window.addEventListener(WORKS_UPDATED_EVENT, syncWorks);
-    window.addEventListener("storage", syncWorks);
 
     return () => {
       window.removeEventListener(WORKS_UPDATED_EVENT, syncWorks);
-      window.removeEventListener("storage", syncWorks);
     };
   }, []);
 

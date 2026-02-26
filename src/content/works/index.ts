@@ -18,32 +18,35 @@ function adaptWorkData(work) {
 }
 
 // 获取所有作品（兼容旧接口）
-export const allWorks = getAllWorks().map(adaptWorkData);
+export const allWorks = [];
 
 // 获取首页展示的作品（兼容旧接口）
-export const getFeaturedWorks = () => {
-  return getAllWorks()
+export const getFeaturedWorks = async () => {
+  const works = await getAllWorks();
+  return works
     .map(adaptWorkData)
     .filter(work => work.featured)
     .sort((a, b) => a.order - b.order);
 };
 
 // 根据分类获取作品（兼容旧接口）
-export const getWorksByCategoryCompat = (category: string) => {
-  return getWorksByCategory(category)
+export const getWorksByCategoryCompat = async (category: string) => {
+  const works = await getWorksByCategory(category);
+  return works
     .map(adaptWorkData)
     .sort((a, b) => a.order - b.order);
 };
 
 // 根据slug获取单个作品（兼容旧接口）
-export const getWorkBySlugCompat = (slug: string) => {
-  const work = getWorkBySlug(slug);
+export const getWorkBySlugCompat = async (slug: string) => {
+  const work = await getWorkBySlug(slug);
   return work ? adaptWorkData(work) : undefined;
 };
 
 // 获取所有作品的slug列表（兼容旧接口）
-export const getAllWorkSlugs = () => {
-  return getAllWorks().map(work => work.slug);
+export const getAllWorkSlugs = async () => {
+  const works = await getAllWorks();
+  return works.map(work => work.slug);
 };
 
 // 导出本地存储操作（供Editor使用）

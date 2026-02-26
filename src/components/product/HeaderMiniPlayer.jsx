@@ -15,8 +15,9 @@ export default function HeaderMiniPlayer() {
   const [pwError, setPwError] = useState(false);
   const [showPwInput, setShowPwInput] = useState(false);
 
-  const handlePwSubmit = () => {
-    if (login(pw)) {
+  const handlePwSubmit = async () => {
+    const ok = await login(pw);
+    if (ok) {
       setPw("");
       setPwError(false);
       setShowPwInput(false);
@@ -127,7 +128,9 @@ export default function HeaderMiniPlayer() {
           {isAdmin ? (
             <button
               type="button"
-              onClick={logout}
+              onClick={() => {
+                void logout();
+              }}
               title="Admin (click to lock)"
               className="flex h-8 w-8 items-center justify-center rounded-full border transition-colors"
               style={{
@@ -144,7 +147,10 @@ export default function HeaderMiniPlayer() {
           ) : showPwInput ? (
             <form
               className="flex items-center gap-1.5"
-              onSubmit={(e) => { e.preventDefault(); handlePwSubmit(); }}
+              onSubmit={(e) => {
+                e.preventDefault();
+                void handlePwSubmit();
+              }}
             >
               <input
                 type="password"

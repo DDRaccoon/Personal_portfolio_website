@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 
 import { useLanguage, useSiteCopy } from "../../../components/i18n/LanguageProvider";
@@ -15,11 +15,35 @@ export default function WorkDetailPage() {
   const { locale } = useLanguage();
   const siteCopy = useSiteCopy();
   const { isAdmin } = useAdmin();
+  const [work, setWork] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   const slug = useMemo(() => String(params.slug || ""), [params.slug]);
-  const work = useMemo(() => getWorkBySlug(slug), [slug]);
+
+  useEffect(() => {
+    let mounted = true;
+
+    const fetchWork = async () => {
+      setLoading(true);
+      const nextWork = await getWorkBySlug(slug);
+      if (!mounted) return;
+      setWork(nextWork);
+      setLoading(false);
+    };
+
+    fetchWork();
+
+    return () => {
+      mounted = false;
+    };
+  }, [slug]);
+
   const title = locale === "zh" ? work?.title_zh || work?.title_en : work?.title_en;
   const summary = locale === "zh" ? work?.summary_zh || work?.summary_en : work?.summary_en;
+
+  if (loading) {
+    return <main className="mx-auto min-h-screen w-full max-w-4xl px-4 pb-16 pt-8 md:px-6 md:pt-12" />;
+  }
 
   if (!work) {
     return (

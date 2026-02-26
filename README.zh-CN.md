@@ -49,7 +49,56 @@ npm run build
 npm start
 ```
 
-无需配置任何环境变量。
+## CMS 配置（Supabase）
+
+项目现已使用 **Supabase 作为真实 CMS 后端** 存储作品数据。
+
+### 1）创建 Supabase 项目
+
+在 Supabase 控制台创建项目，并打开 **SQL Editor**。
+
+### 2）创建 `works` 数据表
+
+执行以下 SQL：
+
+```sql
+create table if not exists public.works (
+  id text primary key,
+  slug text unique not null,
+  category text not null,
+  title_en text not null,
+  title_zh text default '',
+  summary_en text not null,
+  summary_zh text default '',
+  cover text not null,
+  tags jsonb not null default '[]'::jsonb,
+  year integer not null,
+  blocks jsonb not null default '[]'::jsonb,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+create index if not exists works_category_idx on public.works (category);
+create index if not exists works_updated_at_idx on public.works (updated_at desc);
+```
+
+### 3）配置环境变量
+
+复制 `.env.example` 为 `.env.local`，并填写：
+
+- `NEXT_PUBLIC_SUPABASE_URL`
+- `SUPABASE_SERVICE_ROLE_KEY`
+- `CMS_ADMIN_PASSWORD`
+- `SUPABASE_WORKS_TABLE`（可选，默认 `works`）
+
+> `SUPABASE_SERVICE_ROLE_KEY` 必须保密，不能暴露到前端。
+
+### 4）编辑权限机制
+
+- 访客可公开读取作品。
+- 顶部锁按钮会把密码提交到 `/api/admin/session`。
+- 服务端校验成功后会写入 HTTP-only 的 `cms_admin` Cookie。
+- 只有携带该 Cookie 时，`/api/works*` 写接口才允许创建/更新/删除。
 
 ## 项目结构
 
@@ -131,7 +180,8 @@ src/
 
 1. 推送代码到 GitHub。
 2. 在 [Vercel](https://vercel.com) 中导入仓库。
-3. Vercel 自动识别 Next.js 并完成部署。
+3. 在 Vercel 项目设置里配置环境变量。
+4. Vercel 自动识别 Next.js 并完成部署。
 
 ### 自托管
 
