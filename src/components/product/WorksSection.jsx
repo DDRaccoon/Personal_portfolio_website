@@ -7,10 +7,10 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useLanguage, useSiteCopy } from "../i18n/LanguageProvider";
 import { useAdmin } from "../auth/AdminProvider";
 import { CATEGORY_IDS, DEFAULT_CATEGORY } from "../../constants/workCategories";
-import { getAllWorks, WORKS_UPDATED_EVENT } from "../../lib/worksStore";
+import { deleteWork, getAllWorks, WORKS_UPDATED_EVENT } from "../../lib/worksStore";
 import WorksTabs from "../works/WorksTabs";
 
-function WorkCard({ work, locale, copy }) {
+function WorkCard({ work, locale, copy, isAdmin, deleting, onDelete }) {
   const title = locale === "zh" ? work.title_zh || work.title_en : work.title_en;
   const summary = locale === "zh" ? work.summary_zh || work.summary_en : work.summary_en;
 
@@ -44,12 +44,25 @@ function WorkCard({ work, locale, copy }) {
             {work.year}
           </span>
         )}
+
+        {isAdmin && (
+          <button
+            type="button"
+            onClick={(event) => {
+              event.preventDefault();
+              event.stopPropagation();
+              void onDelete(work);
+            }}
+            disabled={deleting}
+            className="absolute left-3 top-3 rounded border border-red-400/50 bg-black/65 px-2 py-1 text-xs text-red-300 transition-colors hover:bg-red-500/15 disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            {deleting ? "Deleting..." : "Delete"}
+          </button>
+        )}
       </div>
       {/* Info */}
       <div className="space-y-2 p-5">
-        <h3
-          className="text-lg font-semibold text-white transition-colors duration-300 group-hover:text-[#FFB58C]"
-        >
+        <h3 className="text-lg font-semibold text-white transition-colors duration-300 group-hover:text-[#FFB58C]">
           {title}
         </h3>
         <p className="line-clamp-2 text-sm leading-relaxed text-white/60">{summary}</p>
@@ -67,6 +80,23 @@ function WorkCard({ work, locale, copy }) {
           </div>
         )}
       </div>
+    </Link>
+  );
+}
+
+function AddWorkCard({ category, copy }) {
+  return (
+    <Link
+      href={`/editor/new?cat=${category}`}
+      className="group flex min-h-[220px] w-full flex-col items-center justify-center gap-3 rounded-2xl border border-dashed border-[#FF7A18]/35 bg-black/20 text-center transition-all duration-300 hover:border-[#FF7A18]/70 hover:bg-[#FF7A18]/5"
+    >
+      <div
+        className="flex h-12 w-12 items-center justify-center rounded-full border border-[#FF7A18]/40 text-2xl text-[#FF7A18] transition-all duration-300 group-hover:border-[#FF7A18]"
+        style={{ background: "rgba(255,122,24,0.08)" }}
+      >
+        {copy.works.emptyStateCta}
+      </div>
+      <p className="text-sm text-white/65 group-hover:text-white/90">{copy.works.createNow}</p>
     </Link>
   );
 }
@@ -100,6 +130,7 @@ export default function WorksSection() {
   const searchParams = useSearchParams();
 
   const [works, setWorks] = useState([]);
+  const [deletingWorkId, setDeletingWorkId] = useState("");
 
   const activeCategory = useMemo(() => {
     const current = searchParams.get("cat") || DEFAULT_CATEGORY;
@@ -131,6 +162,24 @@ export default function WorksSection() {
     router.replace(`${pathname}?${params.toString()}`, { scroll: false });
   };
 
+  const handleDeleteWork = async (work) => {
+    if (!work?.id) return;
+    const title = work.title_zh || work.title_en || "this work";
+    const confirmed = window.confirm(`Delete \"${title}\"? This action cannot be undone.`);
+    if (!confirmed) return;
+
+    setDeletingWorkId(work.id);
+    const ok = await deleteWork(work.id);
+    setDeletingWorkId("");
+
+    if (!ok) {
+      window.alert("Failed to delete work.");
+      return;
+    }
+
+    setWorks((prev) => prev.filter((item) => item.id !== work.id));
+  };
+
   return (
     <section className="w-full pb-20">
       {/* Geometric tabs navigation (orange + black) */}
@@ -156,8 +205,17 @@ export default function WorksSection() {
         ) : (
           <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
             {filteredWorks.map((work) => (
-              <WorkCard key={work.id} work={work} locale={locale} copy={siteCopy} />
+              <WorkCard
+                key={work.id}
+                work={work}
+                locale={locale}
+                copy={siteCopy}
+                isAdmin={isAdmin}
+                deleting={deletingWorkId === work.id}
+                onDelete={handleDeleteWork}
+              />
             ))}
+            {isAdmin && <AddWorkCard category={activeCategory} copy={siteCopy} />}
           </div>
         )}
       </div>
