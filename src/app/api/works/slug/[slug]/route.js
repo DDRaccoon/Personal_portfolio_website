@@ -2,9 +2,10 @@ import { NextResponse } from "next/server";
 
 import { getWorkBySlugFromCms } from "../../../../../lib/server/cms";
 
-export async function GET(_request, { params }) {
+export async function GET(_request, context) {
   try {
-    const work = await getWorkBySlugFromCms(params.slug);
+    const { slug } = await context.params;
+    const work = await getWorkBySlugFromCms(slug);
     if (!work) {
       return NextResponse.json({ error: "Work not found" }, { status: 404 });
     }

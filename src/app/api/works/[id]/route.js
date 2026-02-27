@@ -7,9 +7,10 @@ import {
   updateWorkInCms,
 } from "../../../../lib/server/cms";
 
-export async function GET(_request, { params }) {
+export async function GET(_request, context) {
   try {
-    const work = await getWorkByIdFromCms(params.id);
+    const { id } = await context.params;
+    const work = await getWorkByIdFromCms(id);
     if (!work) {
       return NextResponse.json({ error: "Work not found" }, { status: 404 });
     }
@@ -22,14 +23,15 @@ export async function GET(_request, { params }) {
   }
 }
 
-export async function PUT(request, { params }) {
+export async function PUT(request, context) {
   try {
+    const { id } = await context.params;
     if (!isAdminRequest(request)) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const body = await request.json();
-    const updated = await updateWorkInCms(params.id, body);
+    const updated = await updateWorkInCms(id, body);
     if (!updated) {
       return NextResponse.json({ error: "Work not found" }, { status: 404 });
     }
@@ -42,13 +44,14 @@ export async function PUT(request, { params }) {
   }
 }
 
-export async function DELETE(request, { params }) {
+export async function DELETE(request, context) {
   try {
+    const { id } = await context.params;
     if (!isAdminRequest(request)) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    await deleteWorkInCms(params.id);
+    await deleteWorkInCms(id);
     return NextResponse.json({ ok: true });
   } catch (error) {
     return NextResponse.json(
