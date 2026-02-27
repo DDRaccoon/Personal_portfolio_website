@@ -205,6 +205,7 @@ export async function getWorkByIdFromCms(id) {
 export async function getWorkBySlugFromCms(slug) {
   const normalizedSlug = String(slug || "");
   const trimmedSlug = normalizedSlug.trim();
+  const normalizedMatchSlug = toSlug(trimmedSlug);
 
   const result = await supabaseRequest(
     `/${WORKS_TABLE}?slug=eq.${encodeURIComponent(trimmedSlug)}&select=*&limit=1`
@@ -220,7 +221,11 @@ export async function getWorkBySlugFromCms(slug) {
   // We fetch a small list and match by trimmed slug server-side.
   const fallback = await listWorksFromCms();
   return (
-    fallback.find((work) => String(work?.slug || "").trim() === trimmedSlug) || null
+    fallback.find((work) => {
+      const candidate = String(work?.slug || "");
+      if (!candidate) return false;
+      return toSlug(candidate) === normalizedMatchSlug || candidate.trim() === trimmedSlug;
+    }) || null
   );
 }
 
