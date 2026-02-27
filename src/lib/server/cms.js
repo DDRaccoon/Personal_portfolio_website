@@ -203,33 +203,14 @@ export async function getWorkByIdFromCms(id) {
 }
 
 export async function getWorkBySlugFromCms(slug) {
-  const normalizedSlug = String(slug || "");
-  const trimmedSlug = normalizedSlug.trim();
+  const trimmedSlug = String(slug || "").trim();
   const normalizedMatchSlug = toSlug(trimmedSlug);
 
-  console.log("[cms] getWorkBySlugFromCms called with slug:", JSON.stringify(slug), "trimmed:", JSON.stringify(trimmedSlug), "normalized:", normalizedMatchSlug);
-
-  const result = await supabaseRequest(
-    `/${WORKS_TABLE}?slug=eq.${encodeURIComponent(trimmedSlug)}&select=*&limit=1`
-  );
-  if (!result.ok) {
-    throw new Error(`Failed to get work by slug (${result.status}): ${JSON.stringify(result.data)}`);
-  }
-
-  console.log("[cms] direct eq result:", JSON.stringify(result.data));
-
-  const directHit = result.data?.[0] ? fromDbWork(result.data[0]) : null;
-  if (directHit) return directHit;
-
-  // Fallback: some rows may have invisible whitespace or inconsistent normalization.
-  // We fetch a small list and match by trimmed slug server-side.
-  const fallback = await listWorksFromCms();
-  console.log("[cms] fallback slugs:", fallback.map((w) => JSON.stringify(w?.slug)));
+  const all = await listWorksFromCms();
   return (
-    fallback.find((work) => {
-      const candidate = String(work?.slug || "");
-      if (!candidate) return false;
-      return toSlug(candidate) === normalizedMatchSlug || candidate.trim() === trimmedSlug;
+    all.find((work) => {
+      const candidate = String(work?.slug || "").trim();
+      return candidate === trimmedSlug || toSlug(candidate) === normalizedMatchSlug;
     }) || null
   );
 }
