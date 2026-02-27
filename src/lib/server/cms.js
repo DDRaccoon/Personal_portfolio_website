@@ -203,11 +203,25 @@ export async function getWorkByIdFromCms(id) {
 }
 
 export async function getWorkBySlugFromCms(slug) {
-  const result = await supabaseRequest(`/${WORKS_TABLE}?slug=eq.${encodeURIComponent(slug)}&select=*&limit=1`);
+  const normalizedSlug = String(slug || "");
+  const trimmedSlug = normalizedSlug.trim();
+
+  const result = await supabaseRequest(
+    `/${WORKS_TABLE}?slug=eq.${encodeURIComponent(trimmedSlug)}&select=*&limit=1`
+  );
   if (!result.ok) {
     throw new Error(`Failed to get work by slug (${result.status}): ${JSON.stringify(result.data)}`);
   }
-  return result.data?.[0] ? fromDbWork(result.data[0]) : null;
+
+  const directHit = result.data?.[0] ? fromDbWork(result.data[0]) : null;
+  if (directHit) return directHit;
+
+  // Fallback: some rows may have invisible whitespace or inconsistent normalization.
+  // We fetch a small list and match by trimmed slug server-side.
+  const fallback = await listWorksFromCms();
+  return (
+    fallback.find((work) => String(work?.slug || "").trim() === trimmedSlug) || null
+  );
 }
 
 async function ensureUniqueSlug(baseSlug) {

@@ -11,12 +11,21 @@ import { deleteWork, getAllWorks, WORKS_UPDATED_EVENT } from "../../lib/worksSto
 import WorksTabs from "../works/WorksTabs";
 
 function WorkCard({ work, locale, copy, isAdmin, deleting, onDelete }) {
+  const router = useRouter();
   const title = locale === "zh" ? work.title_zh || work.title_en : work.title_en;
   const summary = locale === "zh" ? work.summary_zh || work.summary_en : work.summary_en;
 
   return (
-    <Link
-      href={`/works/${work.slug}`}
+    <div
+      role="button"
+      tabIndex={0}
+      onClick={() => router.push(`/works/${work.slug}`)}
+      onKeyDown={(event) => {
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          router.push(`/works/${work.slug}`);
+        }
+      }}
       className="group relative overflow-hidden rounded-2xl border border-white/10 bg-black transition-all duration-500 hover:border-[#FF7A18]/60 hover:shadow-[0_0_40px_rgba(255,122,24,0.12)]"
     >
       {/* Cover */}
@@ -80,7 +89,7 @@ function WorkCard({ work, locale, copy, isAdmin, deleting, onDelete }) {
           </div>
         )}
       </div>
-    </Link>
+    </div>
   );
 }
 
