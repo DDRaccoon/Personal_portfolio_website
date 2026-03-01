@@ -23,29 +23,39 @@ const ALIGN_MAP = {
   right: "text-right",
 };
 
+// ── Locale-aware content helper ──
+
+function localContent(block, locale) {
+  if (locale === "zh") return block.content_zh || block.content || "";
+  return block.content || "";
+}
+
 // ── Inline renderers for new block types ──
 
-function TitleBlock({ block }) {
+function TitleBlock({ block, locale }) {
   return (
     <h1 className="text-[28px] font-semibold leading-tight text-white">
-      {block.content || ""}
+      {localContent(block, locale)}
     </h1>
   );
 }
 
-function DescriptionBlock({ block }) {
+function DescriptionBlock({ block, locale }) {
   return (
     <p className="text-[16px] leading-relaxed text-white/80">
-      {block.content || ""}
+      {localContent(block, locale)}
     </p>
   );
 }
 
-function TextRendererBlock({ block }) {
+function TextRendererBlock({ block, locale }) {
   const align = ALIGN_MAP[block.align] || ALIGN_MAP.left;
+  const localBlock = locale === "zh" && block.content_zh
+    ? { ...block, content: block.content_zh }
+    : block;
   return (
     <div className={`${align}`}>
-      <RichTextBlock block={block} />
+      <RichTextBlock block={localBlock} />
     </div>
   );
 }
@@ -73,21 +83,21 @@ function VideoRendererBlock({ block }) {
   );
 }
 
-export default function renderBlock(block) {
+export default function renderBlock(block, locale) {
   if (!block || !block.type) return null;
 
   let content;
 
   switch (block.type) {
     case "Title":
-      content = <TitleBlock block={block} />;
+      content = <TitleBlock block={block} locale={locale} />;
       break;
     case "Description":
-      content = <DescriptionBlock block={block} />;
+      content = <DescriptionBlock block={block} locale={locale} />;
       break;
     case "Text":
     case "RichText":
-      content = <TextRendererBlock block={block} />;
+      content = <TextRendererBlock block={block} locale={locale} />;
       break;
     case "Image":
       content = <ImageBlock block={block} />;

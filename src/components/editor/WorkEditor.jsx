@@ -66,7 +66,9 @@ function normalizeInitialWork(initialWork, initialCategory) {
   }
   return {
     title_en: initialWork.title_en || "",
+    title_zh: initialWork.title_zh || "",
     summary_en: initialWork.summary_en || "",
+    summary_zh: initialWork.summary_zh || "",
     cover: initialWork.cover || "",
     category: initialWork.category || initialCategory,
     tags: initialWork.tags || [],
@@ -203,24 +205,41 @@ function DragHandle(props) {
 
 function TitleBlockEditor({ block, onChange }) {
   return (
-    <InlineInput
-      value={block.content || ""}
-      onChange={(content) => onChange({ ...block, content })}
-      placeholder="Enter title..."
-      className="text-[28px] font-semibold leading-tight text-white"
-    />
+    <div className="space-y-2">
+      <InlineInput
+        value={block.content || ""}
+        onChange={(content) => onChange({ ...block, content })}
+        placeholder="Title (EN)..."
+        className="text-[28px] font-semibold leading-tight text-white"
+      />
+      <InlineInput
+        value={block.content_zh || ""}
+        onChange={(content_zh) => onChange({ ...block, content_zh })}
+        placeholder="标题（中文）..."
+        className="text-[22px] font-semibold leading-tight text-white/55"
+      />
+    </div>
   );
 }
 
 function DescriptionBlockEditor({ block, onChange }) {
   return (
-    <InlineTextarea
-      value={block.content || ""}
-      onChange={(content) => onChange({ ...block, content })}
-      placeholder="Enter description..."
-      className="text-[16px] leading-relaxed text-white/80"
-      minRows={1}
-    />
+    <div className="space-y-2">
+      <InlineTextarea
+        value={block.content || ""}
+        onChange={(content) => onChange({ ...block, content })}
+        placeholder="Description (EN)..."
+        className="text-[16px] leading-relaxed text-white/80"
+        minRows={1}
+      />
+      <InlineTextarea
+        value={block.content_zh || ""}
+        onChange={(content_zh) => onChange({ ...block, content_zh })}
+        placeholder="描述（中文）..."
+        className="text-[16px] leading-relaxed text-white/55"
+        minRows={1}
+      />
+    </div>
   );
 }
 
@@ -233,11 +252,20 @@ function TextBlockEditor({ block, onChange }) {
       <InlineTextarea
         value={block.content || ""}
         onChange={(content) => onChange({ ...block, content })}
-        placeholder="Write text content (supports Markdown)..."
+        placeholder="Text content (EN, supports Markdown)..."
         className={`text-[16px] leading-[1.5] text-white/80 ${
           block.align === "center" ? "text-center" : block.align === "right" ? "text-right" : "text-left"
         }`}
         minRows={3}
+      />
+      <InlineTextarea
+        value={block.content_zh || ""}
+        onChange={(content_zh) => onChange({ ...block, content_zh })}
+        placeholder="文字内容（中文，支持 Markdown）..."
+        className={`text-[16px] leading-[1.5] text-white/55 ${
+          block.align === "center" ? "text-center" : block.align === "right" ? "text-right" : "text-left"
+        }`}
+        minRows={2}
       />
     </div>
   );
@@ -627,26 +655,49 @@ export default function WorkEditor({
       <section className="space-y-4 rounded-xl border border-white/10 bg-black/40 p-5">
         <h2 className="text-lg font-medium text-white">Project Info</h2>
 
-        <label className="block space-y-1 text-sm text-white/80">
-          <span>Title *</span>
-          <input
-            value={form.title_en}
-            onChange={(e) => setForm((prev) => ({ ...prev, title_en: e.target.value }))}
-            placeholder="Work title"
-            className="w-full rounded-md border border-white/15 bg-black/40 px-3 py-2 text-sm text-white outline-none focus:border-[#FF7A18]/70"
-          />
-        </label>
+        <div className="grid gap-4 md:grid-cols-2">
+          <label className="block space-y-1 text-sm text-white/80">
+            <span>Title (EN) *</span>
+            <input
+              value={form.title_en}
+              onChange={(e) => setForm((prev) => ({ ...prev, title_en: e.target.value }))}
+              placeholder="Work title in English"
+              className="w-full rounded-md border border-white/15 bg-black/40 px-3 py-2 text-sm text-white outline-none focus:border-[#FF7A18]/70"
+            />
+          </label>
+          <label className="block space-y-1 text-sm text-white/80">
+            <span>Title (中文)</span>
+            <input
+              value={form.title_zh}
+              onChange={(e) => setForm((prev) => ({ ...prev, title_zh: e.target.value }))}
+              placeholder="作品标题（中文）"
+              className="w-full rounded-md border border-white/15 bg-black/40 px-3 py-2 text-sm text-white outline-none focus:border-[#FF7A18]/70"
+            />
+          </label>
+        </div>
 
-        <label className="block space-y-1 text-sm text-white/80">
-          <span>Summary *</span>
-          <textarea
-            value={form.summary_en}
-            onChange={(e) => setForm((prev) => ({ ...prev, summary_en: e.target.value }))}
-            placeholder="1-2 sentence summary"
-            rows={2}
-            className="w-full rounded-md border border-white/15 bg-black/40 px-3 py-2 text-sm text-white outline-none focus:border-[#FF7A18]/70"
-          />
-        </label>
+        <div className="grid gap-4 md:grid-cols-2">
+          <label className="block space-y-1 text-sm text-white/80">
+            <span>Summary (EN) *</span>
+            <textarea
+              value={form.summary_en}
+              onChange={(e) => setForm((prev) => ({ ...prev, summary_en: e.target.value }))}
+              placeholder="1-2 sentence summary in English"
+              rows={2}
+              className="w-full rounded-md border border-white/15 bg-black/40 px-3 py-2 text-sm text-white outline-none focus:border-[#FF7A18]/70"
+            />
+          </label>
+          <label className="block space-y-1 text-sm text-white/80">
+            <span>Summary (中文)</span>
+            <textarea
+              value={form.summary_zh}
+              onChange={(e) => setForm((prev) => ({ ...prev, summary_zh: e.target.value }))}
+              placeholder="一两句简介（中文）"
+              rows={2}
+              className="w-full rounded-md border border-white/15 bg-black/40 px-3 py-2 text-sm text-white outline-none focus:border-[#FF7A18]/70"
+            />
+          </label>
+        </div>
 
         <label className="block space-y-1 text-sm text-white/80">
           <span>Cover URL *</span>
