@@ -8,6 +8,44 @@ function toSlug(input) {
     .replace(/^-+|-+$/g, "") || `work-${Date.now()}`;
 }
 
+async function uploadVideoFile(file, { workId } = {}) {
+  if (!file) {
+    throw new Error("Missing video file.");
+  }
+
+  const formData = new FormData();
+  formData.append("file", file);
+  if (workId) {
+    formData.append("workId", workId);
+  }
+
+  const response = await fetch("/api/uploads/video", {
+    method: "POST",
+    body: formData,
+    cache: "no-store",
+  });
+
+  const text = await response.text();
+  let data = null;
+  if (text) {
+    try {
+      data = JSON.parse(text);
+    } catch {
+      data = text;
+    }
+  }
+
+  if (!response.ok) {
+    const message =
+      (typeof data === "object" && data?.error) ||
+      (typeof data === "string" && data.trim()) ||
+      `Upload failed (${response.status})`;
+    throw new Error(message);
+  }
+
+  return data;
+}
+
 async function uploadImageFile(file, { workId } = {}) {
   if (!file) {
     throw new Error("Missing image file.");
@@ -182,6 +220,7 @@ export {
   getWorksByCategory,
   createWork,
   uploadImageFile,
+  uploadVideoFile,
   updateWork,
   deleteWork,
   exportWorks,

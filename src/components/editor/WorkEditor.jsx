@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 
-import { createWork, updateWork, uploadImageFile } from "../../lib/worksStore";
+import { createWork, updateWork, uploadImageFile, uploadVideoFile } from "../../lib/worksStore";
 import { CATEGORY_IDS, DEFAULT_CATEGORY, WORK_CATEGORIES } from "../../constants/workCategories";
 
 // ── Constants ──
@@ -353,14 +353,25 @@ function ImageBlockEditor({ block, onChange, workId }) {
   );
 }
 
-function VideoBlockEditor({ block, onChange }) {
+function VideoBlockEditor({ block, onChange, workId }) {
   const fileRef = useRef(null);
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadError, setUploadError] = useState("");
 
-  const handleFile = (e) => {
+  const handleFile = async (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    const url = URL.createObjectURL(file);
-    onChange({ ...block, src: url });
+    try {
+      setIsUploading(true);
+      setUploadError("");
+      const uploaded = await uploadVideoFile(file, { workId });
+      onChange({ ...block, src: uploaded.url });
+    } catch (error) {
+      setUploadError(error.message || "Failed to upload video.");
+    } finally {
+      setIsUploading(false);
+      e.target.value = "";
+    }
   };
 
   const isEmbed = /youtube|youtu\.be|vimeo/.test(block.src || "");
@@ -396,14 +407,16 @@ function VideoBlockEditor({ block, onChange }) {
       ) : (
         <button
           type="button"
-          onClick={() => fileRef.current?.click()}
+          onClick={() => { if (!isUploading) fileRef.current?.click(); }}
           className="flex w-full flex-col items-center gap-2 rounded-lg border-2 border-dashed border-white/15 px-4 py-10 text-white/40 hover:border-[#FF7A18]/30 hover:text-white/60"
         >
           <span className="text-2xl">▶</span>
-          <span className="text-sm">Click to upload video or paste URL below</span>
+          <span className="text-sm">{isUploading ? "Uploading to Supabase..." : "Click to upload video or paste URL below"}</span>
         </button>
       )}
-      <input ref={fileRef} type="file" accept="video/*" className="hidden" onChange={handleFile} />
+      <input ref={fileRef} type="file" accept="video/*" className="hidden" onChange={(e) => { void handleFile(e); }} />
+
+      {uploadError && <p className="text-xs text-red-300/80">{uploadError}</p>}
 
       <InlineInput
         value={block.src?.startsWith("blob:") ? "" : block.src || ""}
@@ -430,7 +443,7 @@ function BlockEditor({ block, onChange, workId }) {
     case "Description": return <DescriptionBlockEditor block={block} onChange={onChange} />;
     case "Text": return <TextBlockEditor block={block} onChange={onChange} />;
     case "Image": return <ImageBlockEditor block={block} onChange={onChange} workId={workId} />;
-    case "Video": return <VideoBlockEditor block={block} onChange={onChange} />;
+    case "Video": return <VideoBlockEditor block={block} onChange={onChange} workId={workId} />;
     default: return <p className="text-sm text-white/50">Unknown block type.</p>;
   }
 }

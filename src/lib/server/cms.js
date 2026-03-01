@@ -188,6 +188,55 @@ export async function uploadImageToCmsStorage(file, { workId = "draft" } = {}) {
   };
 }
 
+export async function uploadVideoToCmsStorage(file, { workId = "draft" } = {}) {
+  if (!file) {
+    throw new Error("Missing file");
+  }
+
+  const bucket = getStorageBucket();
+  const baseUrl = getSupabaseBaseUrl();
+  const serviceRoleKey = getSupabaseServiceRoleKey();
+
+  const ext = (file.name?.split(".").pop() || "mp4").toLowerCase();
+  const safeExt = ext.replace(/[^a-z0-9]/g, "") || "mp4";
+  const objectPath = `works/${safePathSegment(workId)}/videos/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${safeExt}`;
+  const encodedPath = encodeStoragePath(objectPath);
+
+  const uploadResponse = await fetch(
+    `${baseUrl}/storage/v1/object/${encodeURIComponent(bucket)}/${encodedPath}`,
+    {
+      method: "POST",
+      headers: {
+        apikey: serviceRoleKey,
+        Authorization: `Bearer ${serviceRoleKey}`,
+        "Content-Type": file.type || "video/mp4",
+        "x-upsert": "false",
+      },
+      body: file,
+      cache: "no-store",
+    }
+  );
+
+  const text = await uploadResponse.text();
+  let data = null;
+  if (text) {
+    try {
+      data = JSON.parse(text);
+    } catch {
+      data = text;
+    }
+  }
+
+  if (!uploadResponse.ok) {
+    throw new Error(`Failed to upload video (${uploadResponse.status}): ${JSON.stringify(data)}`);
+  }
+
+  return {
+    path: objectPath,
+    url: getPublicStorageUrl(objectPath),
+  };
+}
+
 export async function listWorksFromCms() {
   const result = await supabaseRequest(`/${WORKS_TABLE}?select=*&order=sort_order.asc,created_at.desc`);
   if (!result.ok) {
