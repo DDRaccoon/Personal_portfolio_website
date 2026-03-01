@@ -60,6 +60,7 @@ function normalizeInitialWork(initialWork, initialCategory) {
       category: initialCategory,
       tags: [],
       year: new Date().getFullYear(),
+      sort_order: 0,
       blocks: [],
     };
   }
@@ -70,6 +71,7 @@ function normalizeInitialWork(initialWork, initialCategory) {
     category: initialWork.category || initialCategory,
     tags: initialWork.tags || [],
     year: initialWork.year || new Date().getFullYear(),
+    sort_order: initialWork.sort_order ?? 0,
     blocks: initialWork.blocks || [],
   };
 }
@@ -682,7 +684,7 @@ export default function WorkEditor({
           </div>
         )}
 
-        <div className="grid gap-4 md:grid-cols-2">
+        <div className="grid gap-4 md:grid-cols-3">
           <label className="block space-y-1 text-sm text-white/80">
             <span>Category</span>
             <select
@@ -703,6 +705,17 @@ export default function WorkEditor({
               onChange={(e) => setForm((prev) => ({ ...prev, year: Number(e.target.value) || new Date().getFullYear() }))}
               className="w-full rounded-md border border-white/15 bg-black/40 px-3 py-2 text-sm text-white outline-none focus:border-[#FF7A18]/70"
             />
+          </label>
+          <label className="block space-y-1 text-sm text-white/80">
+            <span>Sort Order</span>
+            <input
+              type="number"
+              min={0}
+              value={form.sort_order}
+              onChange={(e) => setForm((prev) => ({ ...prev, sort_order: Number(e.target.value) || 0 }))}
+              className="w-full rounded-md border border-white/15 bg-black/40 px-3 py-2 text-sm text-white outline-none focus:border-[#FF7A18]/70"
+            />
+            <p className="text-[11px] text-white/35">数字越小越靠前（0 = 第一位）</p>
           </label>
         </div>
 

@@ -55,6 +55,7 @@ function toDbWork(input, { id, slug, createdAt, updatedAt }) {
     cover: input.cover,
     tags: normalizeArray(input.tags),
     year: Number(input.year) || new Date().getFullYear(),
+    sort_order: Number(input.sort_order) || 0,
     blocks: normalizeArray(input.blocks),
     created_at: createdAt,
     updated_at: updatedAt,
@@ -74,6 +75,7 @@ function fromDbWork(row) {
     cover: row.cover,
     tags: normalizeArray(row.tags),
     year: row.year,
+    sort_order: row.sort_order ?? 0,
     blocks: normalizeArray(row.blocks),
     createdAt: row.created_at,
     updatedAt: row.updated_at,
@@ -187,7 +189,7 @@ export async function uploadImageToCmsStorage(file, { workId = "draft" } = {}) {
 }
 
 export async function listWorksFromCms() {
-  const result = await supabaseRequest(`/${WORKS_TABLE}?select=*&order=updated_at.desc,created_at.desc`);
+  const result = await supabaseRequest(`/${WORKS_TABLE}?select=*&order=sort_order.asc,created_at.desc`);
   if (!result.ok) {
     throw new Error(`Failed to list works (${result.status}): ${JSON.stringify(result.data)}`);
   }

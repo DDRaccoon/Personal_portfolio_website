@@ -161,7 +161,10 @@ export default function WorksSection() {
   }, []);
 
   const filteredWorks = useMemo(
-    () => works.filter((item) => item.category === activeCategory),
+    () =>
+      works
+        .filter((item) => item.category === activeCategory)
+        .sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0)),
     [works, activeCategory]
   );
 
