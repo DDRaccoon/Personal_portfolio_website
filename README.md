@@ -73,12 +73,14 @@ create table if not exists public.works (
   cover text not null,
   tags jsonb not null default '[]'::jsonb,
   year integer not null,
+  sort_order integer not null default 0,
   blocks jsonb not null default '[]'::jsonb,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
 
 create index if not exists works_category_idx on public.works (category);
+create index if not exists works_sort_order_idx on public.works (sort_order);
 create index if not exists works_updated_at_idx on public.works (updated_at desc);
 ```
 
@@ -111,6 +113,36 @@ The editor uploads image files to this bucket via `/api/uploads/image`, then sto
 
 - The upload API enforces image-only uploads.
 - Recommended single image size: under 4MB for smooth deployment-platform compatibility.
+
+## Static-First Works Snapshot
+
+Public pages render from `src/content/works/works-snapshot.json` first, then refresh from Supabase when the CMS is available. If Supabase is paused or slow, the site keeps showing the last committed snapshot instead of an empty works section.
+
+Refresh the snapshot while Supabase is online:
+
+```bash
+npm run snapshot:works
+```
+
+The export script can use either `SUPABASE_SERVICE_ROLE_KEY` or `NEXT_PUBLIC_SUPABASE_ANON_KEY` from `.env.local`. You can also export from a deployed public API instead:
+
+```bash
+npm run snapshot:works -- --source-url https://your-site.example/api/works
+```
+
+If your shell can download the API but Node cannot reach it, save the JSON first and import from the file:
+
+```bash
+npm run snapshot:works -- --source-file ./works.json
+```
+
+Commit the updated `src/content/works/works-snapshot.json` after exporting. CMS writes and uploads still require Supabase and will fail clearly when Supabase is unavailable, so edits are not silently lost.
+
+To make public media independent from Supabase Storage, mirror snapshot media into `public/works-media`:
+
+```bash
+npm run mirror:works-media
+```
 
 ## Project Structure
 

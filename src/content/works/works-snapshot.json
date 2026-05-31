@@ -1,0 +1,686 @@
+[
+  {
+    "id": "work-1773670413149-f8b0mv",
+    "slug": "houdini-vegetation-to-nanite-generation-tool",
+    "category": "tools",
+    "title_en": "Houdini Vegetation-to-Nanite Generation Tool",
+    "title_zh": "Houdini 植物 Nanite 化生成工具",
+    "summary_en": "An HDA tool built in Houdini to procedurally convert card-based vegetation into Nanite-compatible plant models, exploring gains in both production efficiency and visual fidelity.",
+    "summary_zh": "基于 Houdini 开发 HDA 工具，将片植被自动转换为适配 Nanite 的植物模型，探索程序化流程在植被资产制作中的效率与表现提升。",
+    "cover": "/works-media/works/draft/1773670339551-t189ag.png",
+    "tags": [
+      "Houdini",
+      "Vex"
+    ],
+    "year": 2026,
+    "sort_order": 0,
+    "blocks": [
+      {
+        "id": "b-1773670348593-6leb",
+        "alt": "Snipaste_2026-03-16_22-09-28.png",
+        "src": "/works-media/works/draft/1773670354101-fqg00f.png",
+        "type": "Image",
+        "width": "full",
+        "caption": ""
+      },
+      {
+        "id": "b-1773670327006-j89o",
+        "alt": "Snipaste_2026-03-16_22-08-41.png",
+        "src": "/works-media/works/draft/1773670339551-t189ag.png",
+        "type": "Image",
+        "width": "full",
+        "caption": ""
+      }
+    ],
+    "createdAt": "2026-03-16T14:13:32.008+00:00",
+    "updatedAt": "2026-03-16T14:13:32.008+00:00"
+  },
+  {
+    "id": "work-1773038963819-pk5aq0",
+    "slug": "cave-arena",
+    "category": "demos",
+    "title_en": "Cave Arena",
+    "title_zh": "洞穴竞技场",
+    "summary_en": "a cave-based combat environment inspired by Path of Exile, with a strong focus on dark fantasy atmosphere and a tense, oppressive spatial mood. The crystal assets were procedurally created in Houdini, while some of the textures were assisted by Stable Diffusion (SD) to improve iteration efficiency and overall visual quality.",
+    "summary_zh": "以《流放之路》为灵感创作的洞穴战斗场景，整体氛围强调黑暗奇幻感与压迫性的空间体验。场景中的水晶体资产由 Houdini 程序化生成，并结合 Stable Diffusion（SD）辅助制作了部分贴图，用于提升资产迭代效率与整体视觉表现。",
+    "cover": "/works-media/works/draft/1773038023644-k14wvy.png",
+    "tags": [
+      "UE5",
+      "Houdini",
+      "Blueprints",
+      "Substance Designer"
+    ],
+    "year": 2023,
+    "sort_order": 0,
+    "blocks": [
+      {
+        "id": "b-1773037975544-xq9o",
+        "alt": "out.png",
+        "src": "/works-media/works/draft/1773038023644-k14wvy.png",
+        "type": "Image",
+        "width": "full",
+        "caption": ""
+      },
+      {
+        "id": "b-1773038438888-etuo",
+        "src": "/works-media/works/draft/videos/1773038445419-mson2o.mp4",
+        "type": "Video",
+        "width": "full",
+        "poster": "",
+        "caption": ""
+      },
+      {
+        "id": "b-1773039000777-30dv",
+        "alt": "图层 3.png",
+        "src": "/works-media/works/work-1773038963819-pk5aq0/1773039026020-y81210.png",
+        "type": "Image",
+        "width": "half",
+        "caption": ""
+      },
+      {
+        "id": "b-1773039029402-vjos",
+        "alt": "图层 4.png",
+        "src": "/works-media/works/work-1773038963819-pk5aq0/1773039033813-mklayu.png",
+        "type": "Image",
+        "width": "half",
+        "caption": ""
+      },
+      {
+        "id": "b-1773039043027-0dux",
+        "alt": "图层 7.png",
+        "src": "/works-media/works/work-1773038963819-pk5aq0/1773039053636-8tbhx4.png",
+        "type": "Image",
+        "width": "half",
+        "caption": ""
+      },
+      {
+        "id": "b-1773039060759-jxt0",
+        "alt": "图层 8.png",
+        "src": "/works-media/works/work-1773038963819-pk5aq0/1773039066983-20p9ze.png",
+        "type": "Image",
+        "width": "half",
+        "caption": ""
+      },
+      {
+        "id": "b-1773039072971-s7yt",
+        "alt": "图层 5.png",
+        "src": "/works-media/works/work-1773038963819-pk5aq0/1773039081383-w3i3zx.png",
+        "type": "Image",
+        "width": "full",
+        "caption": ""
+      }
+    ],
+    "createdAt": "2026-03-09T06:49:22.425+00:00",
+    "updatedAt": "2026-03-09T06:51:32.37+00:00"
+  },
+  {
+    "id": "work-1772351126342-g3bhxx",
+    "slug": "honkai-star-rail-character-shader-study-breakdown-rebuild",
+    "category": "shader",
+    "title_en": "Honkai: Star Rail — Character Shader Study (Breakdown + Rebuild)",
+    "title_zh": "崩坏：星穹铁道 - 角色渲染方案拆解复刻",
+    "summary_en": "A systematic breakdown and rebuild of the Honkai: Star Rail character rendering approach—from material layering and lighting response to face/hair treatment, outlines, and stylized post effects. Reproduced the core visual logic and distilled transferable shader implementation and performance optimization takeaways for UE/Unity.",
+    "summary_zh": "对《崩坏：星穹铁道》角色渲染进行系统拆解与重建：从材质分层、光照响应、脸部/头发处理到描边与后期风格化，复现核心视觉逻辑，并总结可迁移到 UE/Unity 的 Shader 实现与性能优化要点。",
+    "cover": "/works-media/works/draft/1772351116173-h1ihnh.png",
+    "tags": [
+      "UE5",
+      "HLSL",
+      "Shader"
+    ],
+    "year": 2024,
+    "sort_order": 0,
+    "blocks": [
+      {
+        "id": "b-1772351102559-k0r2",
+        "alt": "封面.png",
+        "src": "/works-media/works/draft/1772351116173-h1ihnh.png",
+        "type": "Image",
+        "width": "full",
+        "caption": ""
+      },
+      {
+        "id": "b-1772371807799-jo8p",
+        "alt": "大图.png",
+        "src": "/works-media/works/work-1772351126342-g3bhxx/1772371814475-kkvp8t.png",
+        "type": "Image",
+        "width": "full",
+        "caption": ""
+      },
+      {
+        "id": "b-1772376886093-l7bv",
+        "src": "/works-media/works/work-1772351126342-g3bhxx/videos/1772377432289-58uvpo.mp4",
+        "type": "Video",
+        "width": "full",
+        "poster": "",
+        "caption": ""
+      },
+      {
+        "id": "b-1772373722705-7wzz",
+        "type": "Title",
+        "width": "full",
+        "content": "Face SDF",
+        "content_zh": "面部 SDF"
+      },
+      {
+        "id": "b-1772373697261-z693",
+        "alt": "1.png",
+        "src": "/works-media/works/work-1772351126342-g3bhxx/1772373709696-p387iv.png",
+        "type": "Image",
+        "width": "full",
+        "caption": ""
+      },
+      {
+        "id": "b-1772372002932-cwf3",
+        "alt": "SDF.png",
+        "src": "/works-media/works/work-1772351126342-g3bhxx/1772372007713-o35etp.png",
+        "type": "Image",
+        "width": "full",
+        "caption": ""
+      },
+      {
+        "id": "b-1772373738277-72p2",
+        "type": "Text",
+        "align": "left",
+        "width": "full",
+        "content": "To render the face, SDF (Signed Distance Field) is used. First, the forward, right, and up vectors of the head are obtained. The light vector is then adjusted to the horizontal plane of the head's coordinate system using the up vector. By performing a dot product between the new light vector and the right vector, the light's position relative to the face (left or right) is determined. Based on this, the UV horizontal coordinate of the SDF is adjusted to sample the corresponding grayscale value. To avoid incorrect rendering when the light is centered, a slight offset is applied to the sampling position. Finally, a threshold is obtained by taking the dot product of the light vector and the forward vector, and smoothstep is used for smooth comparison. Lerp interpolation is then applied to replace areas not affected by SDF with ambient occlusion (AO).",
+        "content_zh": "制作脸部渲染，使用了SDF技术。首先，获取头部的前向量、右向量和上向量。通过上向量将光照方向调整至头部坐标系的水平面，并利用新光向量与右向量的点积来判断光线在脸部的左右位置。接着，基于这一判断调整SDF的UV横坐标，从而获取对应的灰度值。在光照位于中心时，稍微偏移采样位置以避免错误的渲染。最后，通过点乘前向量与光向量得到一个阈值，并使用smoothstep进行平滑比较，再通过Lerp进行插值，将不受SDF影响的区域用AO替代。"
+      },
+      {
+        "id": "b-1772374195467-53cm",
+        "type": "Title",
+        "width": "full",
+        "content": "Black Stockings",
+        "content_zh": "黑丝"
+      },
+      {
+        "id": "b-1772374244609-j0c5",
+        "alt": "HighresScreenshot00005.png",
+        "src": "/works-media/works/work-1772351126342-g3bhxx/1772374251723-9tzynl.png",
+        "type": "Image",
+        "width": "half",
+        "caption": ""
+      },
+      {
+        "id": "b-1772374259207-tn1t",
+        "alt": "SilkStockings.png",
+        "src": "/works-media/works/work-1772351126342-g3bhxx/1772374262673-3tbk6l.png",
+        "type": "Image",
+        "width": "half",
+        "caption": ""
+      },
+      {
+        "id": "b-1772374270438-s8og",
+        "type": "Text",
+        "align": "left",
+        "width": "full",
+        "content": "The stocking shader is built from two key components: view-dependent translucency/specular response and fabric pattern detail.\nFirst, a Fresnel term is used to drive the view-angle response, producing the characteristic change in appearance across viewing angles (subtler when facing the camera and stronger at grazing angles), which helps simulate the lighting and see-through feel of stockings. This Fresnel result is then blended with the stocking’s fabric texture to establish the base structure and micro detail.\n\nFor art-directable tone and color variation, the shader also samples a gradient ramp. In Unreal Engine, this is authored as a Curve and registered into a Curve Atlas, allowing the material to sample it like a texture. Finally, the ramp output is combined with the Fresnel/texture layers to achieve the final stocking look.",
+        "content_zh": "黑丝效果主要分两部分：视角相关的透光/高光与织物纹理。\n首先使用 Fresnel（菲涅尔） 构建视角响应：让材质在不同观察角度下产生变化（更贴近视线时更透/更弱，掠射角更明显），用来模拟黑丝随角度变化的光照与通透感。随后将该 Fresnel 结果与黑丝的织物纹理进行混合，形成基础的结构与细节。\n\n为了控制颜色与明暗层次，黑丝额外采样一条颜色渐变（Gradient Ramp）。在 Unreal Engine 中可以用 Curve（曲线） 来制作这条渐变，将曲线注册到 Curve Atlas（曲线图谱） 后，即可在材质中作为纹理进行采样。最终将渐变结果与 Fresnel/纹理混合，完成黑丝的整体表现。"
+      }
+    ],
+    "createdAt": "2026-03-01T07:45:25.273+00:00",
+    "updatedAt": "2026-03-01T15:05:43.908+00:00"
+  },
+  {
+    "id": "work-1772202575344-n9igjf",
+    "slug": "wuchang-fallen-feathers",
+    "category": "full-game",
+    "title_en": "WUCHANG: Fallen Feathers",
+    "title_zh": "明末：渊虚之羽",
+    "summary_en": "I led environment art for Chapter 2, creating gameplay-ready scenes in Unreal Engine 5. Developed custom tools and Houdini procedural assets to streamline workflow, and optimized shaders and materials for both visual quality and performance.",
+    "summary_zh": "我负责指导和领导第二章节的环境艺术工作，结合虚幻5的美术优势调整与游戏玩法契合的美术效果。同时还开发了效率脚本以及Houdini程序化资产工具用来简化工作流，并对着色器和材质进行了优化，以提升视觉效果和性能。",
+    "cover": "/works-media/works/draft/1772202564127-29fyyd.png",
+    "tags": [
+      "Unreal Engine",
+      "Houdini",
+      "C++",
+      "Python",
+      "Blender"
+    ],
+    "year": 2025,
+    "sort_order": 0,
+    "blocks": [
+      {
+        "id": "b-1772202554840-9rto",
+        "alt": "preview_png (1).png",
+        "src": "/works-media/works/draft/1772202564127-29fyyd.png",
+        "type": "Image",
+        "width": "full",
+        "caption": ""
+      },
+      {
+        "id": "b-1772207962692-ojim",
+        "alt": "preview_png.png",
+        "src": "/works-media/works/work-1772202575344-n9igjf/1772207970113-o4l537.png",
+        "type": "Image",
+        "width": "third",
+        "caption": ""
+      },
+      {
+        "id": "b-1772330178263-g2oy",
+        "alt": "村落(1).png",
+        "src": "/works-media/works/work-1772202575344-n9igjf/1772330189700-nbhga6.png",
+        "type": "Image",
+        "width": "third",
+        "caption": ""
+      },
+      {
+        "id": "b-1772330215063-6kgw",
+        "alt": "村落1.png",
+        "src": "/works-media/works/work-1772202575344-n9igjf/1772330224754-9clzv1.png",
+        "type": "Image",
+        "width": "third",
+        "caption": ""
+      },
+      {
+        "id": "b-1772330234959-0cma",
+        "alt": "村落2.png",
+        "src": "/works-media/works/work-1772202575344-n9igjf/1772330242813-q4rb7g.png",
+        "type": "Image",
+        "width": "third",
+        "caption": ""
+      },
+      {
+        "id": "b-1772330249339-da83",
+        "alt": "洞穴01.png",
+        "src": "/works-media/works/work-1772202575344-n9igjf/1772330259853-qsxrbw.png",
+        "type": "Image",
+        "width": "third",
+        "caption": ""
+      },
+      {
+        "id": "b-1772330287311-9di3",
+        "alt": "洞穴02.png",
+        "src": "/works-media/works/work-1772202575344-n9igjf/1772330295281-o51qui.png",
+        "type": "Image",
+        "width": "third",
+        "caption": ""
+      },
+      {
+        "id": "b-1772332052265-ozi6",
+        "alt": "外城03.png",
+        "src": "/works-media/works/work-1772202575344-n9igjf/1772332114585-8owiaz.png",
+        "type": "Image",
+        "width": "full",
+        "caption": ""
+      },
+      {
+        "id": "b-1772332127626-in4e",
+        "alt": "外城01.png",
+        "src": "/works-media/works/work-1772202575344-n9igjf/1772333280525-k5up8m.png",
+        "type": "Image",
+        "width": "third",
+        "caption": ""
+      },
+      {
+        "id": "b-1772332146145-ffte",
+        "alt": "外城02.png",
+        "src": "/works-media/works/work-1772202575344-n9igjf/1772332154194-xnwr0x.png",
+        "type": "Image",
+        "width": "third",
+        "caption": ""
+      },
+      {
+        "id": "b-1772332162649-7kj7",
+        "alt": "外城04.png",
+        "src": "/works-media/works/work-1772202575344-n9igjf/1772332171641-0piczz.png",
+        "type": "Image",
+        "width": "third",
+        "caption": ""
+      },
+      {
+        "id": "b-1772332179628-rphm",
+        "alt": "外城05.png",
+        "src": "/works-media/works/work-1772202575344-n9igjf/1772332190440-ppshbs.png",
+        "type": "Image",
+        "width": "third",
+        "caption": ""
+      },
+      {
+        "id": "b-1772332200187-qnqv",
+        "alt": "外城07.png",
+        "src": "/works-media/works/work-1772202575344-n9igjf/1772332209013-5skweq.png",
+        "type": "Image",
+        "width": "third",
+        "caption": ""
+      },
+      {
+        "id": "b-1772332217464-b0gh",
+        "alt": "外城08.png",
+        "src": "/works-media/works/work-1772202575344-n9igjf/1772332223461-coqvzs.png",
+        "type": "Image",
+        "width": "third",
+        "caption": ""
+      },
+      {
+        "id": "b-1772333289604-m8xi",
+        "alt": "室内04.png",
+        "src": "/works-media/works/work-1772202575344-n9igjf/1772333304257-vwr1bw.png",
+        "type": "Image",
+        "width": "full",
+        "caption": ""
+      },
+      {
+        "id": "b-1772333473802-qvwb",
+        "alt": "室内03.png",
+        "src": "/works-media/works/work-1772202575344-n9igjf/1772333489997-tuc3j6.png",
+        "type": "Image",
+        "width": "third",
+        "caption": ""
+      },
+      {
+        "id": "b-1772333566618-d051",
+        "alt": "室内02.png",
+        "src": "/works-media/works/work-1772202575344-n9igjf/1772333576742-iirpdl.png",
+        "type": "Image",
+        "width": "third",
+        "caption": ""
+      },
+      {
+        "id": "b-1772333611962-sqqe",
+        "alt": "室内05.png",
+        "src": "/works-media/works/work-1772202575344-n9igjf/1772333620495-vc5r65.png",
+        "type": "Image",
+        "width": "third",
+        "caption": ""
+      },
+      {
+        "id": "b-1772333799739-9tle",
+        "alt": "室内06.png",
+        "src": "/works-media/works/work-1772202575344-n9igjf/1772333812695-9rx6d5.png",
+        "type": "Image",
+        "width": "full",
+        "caption": ""
+      },
+      {
+        "id": "b-1772333730564-v8ux",
+        "alt": "洞穴03.png",
+        "src": "/works-media/works/work-1772202575344-n9igjf/1772333751158-c9gmd8.png",
+        "type": "Image",
+        "width": "third",
+        "caption": ""
+      },
+      {
+        "id": "b-1772333829945-4huv",
+        "alt": "室内01.png",
+        "src": "/works-media/works/work-1772202575344-n9igjf/1772333850742-27k8bj.png",
+        "type": "Image",
+        "width": "third",
+        "caption": ""
+      },
+      {
+        "id": "b-1772333887310-b9w8",
+        "alt": "洞穴06.png",
+        "src": "/works-media/works/work-1772202575344-n9igjf/1772333900219-oc6rrh.png",
+        "type": "Image",
+        "width": "third",
+        "caption": ""
+      },
+      {
+        "id": "b-1772960961488-2zll",
+        "type": "Title",
+        "width": "full",
+        "content": "Houdini",
+        "content_zh": "Houdini"
+      },
+      {
+        "id": "b-1772960969262-mofd",
+        "alt": "Snipaste_2026-03-01_14-56-21.png",
+        "src": "/works-media/works/work-1772202575344-n9igjf/1772960977389-tw09wu.png",
+        "type": "Image",
+        "width": "full",
+        "caption": ""
+      },
+      {
+        "id": "b-1772961342192-stiz",
+        "src": "/works-media/works/work-1772202575344-n9igjf/videos/1772961354176-6n8qx1.mp4",
+        "type": "Video",
+        "width": "full",
+        "poster": "",
+        "caption": ""
+      },
+      {
+        "id": "b-1772961384017-qgma",
+        "type": "Text",
+        "align": "left",
+        "width": "full",
+        "content": "Developed a procedural rock-generation tool in Houdini to enable batch production of rock assets and improve project workflow efficiency.",
+        "content_zh": "使用 Houdini 构建程序化山石生成工具，实现山石资源的批量生产，提升项目制作效率。"
+      },
+      {
+        "id": "b-1772961400150-jneu",
+        "alt": "Snipaste_2.png",
+        "src": "/works-media/works/work-1772202575344-n9igjf/1772961405504-fh1ias.png",
+        "type": "Image",
+        "width": "full",
+        "caption": ""
+      },
+      {
+        "id": "b-1772961751478-y76k",
+        "src": "/works-media/works/work-1772202575344-n9igjf/videos/1772961942504-9gjlyh.mp4",
+        "type": "Video",
+        "width": "full",
+        "poster": "",
+        "caption": ""
+      },
+      {
+        "id": "b-1772961727955-hg6z",
+        "type": "Text",
+        "align": "left",
+        "width": "full",
+        "content": "Developed a procedural distant mountain and terrain generation tool in Houdini for large-scale plains and background landscapes, improving visual quality, reducing production costs, and increasing workflow efficiency.",
+        "content_zh": "使用 Houdini 构建程序化远景山体与地形生成工具，用于平原和远景地貌的批量制作，提升画面质量、降低制作成本并提高工作效率。"
+      }
+    ],
+    "createdAt": "2026-02-27T14:29:34.594+00:00",
+    "updatedAt": "2026-03-08T09:26:53.998+00:00"
+  },
+  {
+    "id": "work-1773670928515-xwnfap",
+    "slug": "designer-friendly-no-code-tool-for-unreal-gas",
+    "category": "tools",
+    "title_en": "Designer-Friendly No-Code Tool for Unreal GAS",
+    "title_zh": "面向设计师的虚幻 GAS 无代码配置工具",
+    "summary_en": "A designer-friendly Unreal Engine GAS tool built with C++, Blueprints, and data tables, allowing attributes and Gameplay Effects to be configured in a more intuitive way while staying efficiently synchronized with the GAS system.",
+    "summary_zh": "基于 C++、蓝图与数据表构建虚幻引擎 GAS 配置工具，让设计师能够以更直观的方式完成属性与 Gameplay Effect 配置，并保持与 GAS 系统的高效同步。",
+    "cover": "/works-media/works/draft/1773670877521-v317k7.png",
+    "tags": [
+      "C++",
+      "HLSL",
+      "GAS",
+      "Blueprint"
+    ],
+    "year": 2026,
+    "sort_order": 1,
+    "blocks": [
+      {
+        "id": "b-1773670842403-mhxs",
+        "alt": "图层 15.png",
+        "src": "/works-media/works/draft/1773670877521-v317k7.png",
+        "type": "Image",
+        "width": "full",
+        "caption": ""
+      }
+    ],
+    "createdAt": "2026-03-16T14:22:07.422+00:00",
+    "updatedAt": "2026-03-16T14:22:07.422+00:00"
+  },
+  {
+    "id": "work-1772958339176-w527et",
+    "slug": "genshin-style-character-rendering-in-unity-urp",
+    "category": "shader",
+    "title_en": "Genshin-Style Character Rendering in Unity URP",
+    "title_zh": "Unity-URP-原神风格角色渲染",
+    "summary_en": "This is a Genshin-style character rendering project built in Unity URP, using custom HLSL shaders for body and hair toon shading, face SDF shadows, and an outline system, with ILM masks, ramp textures, metallic highlights, and orientation vectors driving the overall lighting response.",
+    "summary_zh": "这是一个基于 Unity URP 实现的原神风格角色渲染项目，使用自定义 HLSL Shader 完成身体与头发的 Toon Shading、脸部 SDF 阴影以及描边系统，并通过 ILM、Ramp、金属高光和方向向量控制角色的整体光影表现。",
+    "cover": "/works-media/works/draft/1772958303338-kddsrn.png",
+    "tags": [
+      "Unity",
+      "HLSL"
+    ],
+    "year": 2024,
+    "sort_order": 1,
+    "blocks": [
+      {
+        "id": "b-1772958297775-rf59",
+        "alt": "高光和面部SDF.png",
+        "src": "/works-media/works/draft/1772958303338-kddsrn.png",
+        "type": "Image",
+        "width": "full",
+        "caption": ""
+      },
+      {
+        "id": "b-1772958219863-3mes",
+        "src": "/works-media/works/draft/videos/1772958291792-ggxzel.mp4",
+        "type": "Video",
+        "width": "full",
+        "poster": "",
+        "caption": ""
+      },
+      {
+        "id": "b-1772960516590-miqq",
+        "alt": "高光和面部SDF实现.png",
+        "src": "/works-media/works/work-1772958339176-w527et/1772960521684-f8g7ug.png",
+        "type": "Image",
+        "width": "full",
+        "caption": ""
+      },
+      {
+        "id": "b-1772960582506-ge29",
+        "type": "Text",
+        "align": "left",
+        "width": "full",
+        "content": "Hair Highlight: Uses a Blinn-Phong specular model combined with an ILM mask to control material regions, giving the hair clearer light response while preserving an anime-style flat look.\n\nFace SDF: Uses an SDF texture and character orientation vectors to control left-right facial shadow distribution, producing a more stable and art-directable anime face shading result.",
+        "content_zh": "头发高光：通过 Blinn-Phong 高光结合 ILM Mask 控制材质区域，让头发在保持二次元平面感的同时拥有更清晰的受光层次。\n\n面部 SDF：使用 SDF 贴图与角色朝向向量控制左右脸阴影分布，以获得更稳定、更具美术可控性的二次元面部阴影效果。"
+      },
+      {
+        "id": "b-1772960800343-muls",
+        "alt": "描边.png",
+        "src": "/works-media/works/work-1772958339176-w527et/1772960805664-tcwcij.png",
+        "type": "Image",
+        "width": "full",
+        "caption": ""
+      },
+      {
+        "id": "b-1772960807717-1u1o",
+        "type": "Text",
+        "align": "left",
+        "width": "full",
+        "content": "The outline system generates the character silhouette through normal extrusion and front-face culling, while using ILM alpha to classify outline colors across different material regions. This allows the outline to enhance character readability while also supporting the overall anime-style material language. The method is lightweight and efficient, though outline thickness is still affected by camera distance.",
+        "content_zh": "描边系统通过法线外扩与 Front Cull 生成角色轮廓，并结合 ILM Alpha 对不同材质区域进行描边颜色分类，使轮廓在强化角色边缘识别度的同时，也能更好地服务整体二次元材质风格。该方案实现简单、性能开销较低，但描边宽度会受到镜头距离影响。"
+      }
+    ],
+    "createdAt": "2026-03-08T08:25:37.8+00:00",
+    "updatedAt": "2026-03-08T09:07:20.212+00:00"
+  },
+  {
+    "id": "work-1773669140245-dlvcmu",
+    "slug": "guilty-gear-character-rendering-recreation",
+    "category": "shader",
+    "title_en": "Guilty Gear Character Rendering Recreation",
+    "title_zh": "《罪恶装备》角色渲染复刻",
+    "summary_en": "A full recreation of Guilty Gear’s stylized character rendering workflow in Unreal Engine 5, featuring post-process based character outlines to reproduce its bold anime-inspired visual style.",
+    "summary_zh": "在 Unreal Engine 5 中完整复刻《罪恶装备》的风格化角色渲染方案，并结合后处理实现角色描边效果，呈现其鲜明的二次元视觉表现。",
+    "cover": "/works-media/works/draft/1773669071628-20hqj6.jpg",
+    "tags": [
+      "UE5",
+      "Material"
+    ],
+    "year": 2023,
+    "sort_order": 2,
+    "blocks": [
+      {
+        "id": "b-1773669058913-sh1f",
+        "alt": "-npr-demo-0000.jpg",
+        "src": "/works-media/works/draft/1773669071628-20hqj6.jpg",
+        "type": "Image",
+        "width": "full",
+        "caption": ""
+      },
+      {
+        "id": "b-1773669076816-18xh",
+        "alt": "-snipaste-2023-05-26-18-24-10.jpg",
+        "src": "/works-media/works/draft/1773669083787-jrturb.jpg",
+        "type": "Image",
+        "width": "full",
+        "caption": ""
+      },
+      {
+        "id": "b-1773669459825-f4ca",
+        "src": "/works-media/works/work-1773669140245-dlvcmu/videos/1773669465959-717w0l.mp4",
+        "type": "Video",
+        "width": "full",
+        "poster": "",
+        "caption": ""
+      }
+    ],
+    "createdAt": "2026-03-16T13:52:19.258+00:00",
+    "updatedAt": "2026-03-16T13:58:07.606+00:00"
+  },
+  {
+    "id": "work-1773669415435-jtxkcl",
+    "slug": "recreating-unreal-engine-5-pbr-shaders-in-unity",
+    "category": "shader",
+    "title_en": "Recreating Unreal Engine 5 PBR Shaders in Unity",
+    "title_zh": "在 Unity 中复刻 Unreal Engine 5 的 PBR 着色器",
+    "summary_en": "An exploration of recreating Unreal Engine 5’s PBR shader look in Unity using HLSL, with a focus on comparing material and lighting workflows across both engines.",
+    "summary_zh": "尝试使用 HLSL 在 Unity 中复刻 Unreal Engine 5 的 PBR 着色器效果，探索两套引擎在材质与光照表现上的实现方式。",
+    "cover": "/works-media/works/draft/1773669396361-uwx1mf.png",
+    "tags": [
+      "Unity",
+      "UE5",
+      "HLSL",
+      "Shader"
+    ],
+    "year": 2023,
+    "sort_order": 3,
+    "blocks": [
+      {
+        "id": "b-1773669391356-0xrh",
+        "alt": "Snipaste_2026-03-16_21-55-34.png",
+        "src": "/works-media/works/draft/1773669396361-uwx1mf.png",
+        "type": "Image",
+        "width": "full",
+        "caption": ""
+      },
+      {
+        "id": "b-1773669291469-rygv",
+        "src": "/works-media/works/draft/videos/1773669297533-jbzw8k.mp4",
+        "type": "Video",
+        "width": "full",
+        "poster": "",
+        "caption": ""
+      }
+    ],
+    "createdAt": "2026-03-16T13:56:54.474+00:00",
+    "updatedAt": "2026-03-16T13:56:54.474+00:00"
+  },
+  {
+    "id": "work-1773669623118-myycsk",
+    "slug": "procedural-end-to-end-modeling-in-houdini",
+    "category": "shader",
+    "title_en": "Procedural End-to-End Modeling in Houdini",
+    "title_zh": "Houdini 全流程程序化建模实践",
+    "summary_en": "An end-to-end modeling study in Houdini, incorporating the COPs context for texturing and baking, and exploring the potential of procedural workflows in asset creation.",
+    "summary_zh": "使用 Houdini 完成全流程建模，并结合 COPs 模块尝试贴图制作与烘焙，研究程序化工作流在建模与资产开发中的潜力。",
+    "cover": "/works-media/works/draft/1773669599711-m0qsek.png",
+    "tags": [
+      "Houdini",
+      "COPs",
+      "Vex"
+    ],
+    "year": 2026,
+    "sort_order": 4,
+    "blocks": [
+      {
+        "id": "b-1773669588065-kohl",
+        "alt": "斧子.png",
+        "src": "/works-media/works/draft/1773669599711-m0qsek.png",
+        "type": "Image",
+        "width": "full",
+        "caption": ""
+      }
+    ],
+    "createdAt": "2026-03-16T14:00:22.703+00:00",
+    "updatedAt": "2026-03-16T14:00:22.703+00:00"
+  }
+]

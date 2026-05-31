@@ -6,6 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
+    "snapshot:works": "node scripts/export-works-snapshot.mjs",
+    "mirror:works-media": "node scripts/mirror-works-media.mjs",
     "lint": "eslint ."
   },
   "dependencies": {

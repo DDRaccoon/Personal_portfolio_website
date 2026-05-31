@@ -7,7 +7,7 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useLanguage, useSiteCopy } from "../i18n/LanguageProvider";
 import { useAdmin } from "../auth/AdminProvider";
 import { CATEGORY_IDS, DEFAULT_CATEGORY } from "../../constants/workCategories";
-import { deleteWork, getAllWorks, WORKS_UPDATED_EVENT } from "../../lib/worksStore";
+import { deleteWork, getAllWorks, getStaticWorks, WORKS_UPDATED_EVENT } from "../../lib/worksStore";
 import WorksTabs from "../works/WorksTabs";
 
 function WorkCard({ work, locale, copy, isAdmin, deleting, onDelete }) {
@@ -138,7 +138,7 @@ export default function WorksSection() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
-  const [works, setWorks] = useState([]);
+  const [works, setWorks] = useState(() => getStaticWorks());
   const [deletingWorkId, setDeletingWorkId] = useState("");
 
   const activeCategory = useMemo(() => {
@@ -148,7 +148,7 @@ export default function WorksSection() {
 
   useEffect(() => {
     const syncWorks = async () => {
-      const nextWorks = await getAllWorks();
+      const nextWorks = await getAllWorks({ fresh: isAdmin });
       setWorks(nextWorks);
     };
 
@@ -158,7 +158,7 @@ export default function WorksSection() {
     return () => {
       window.removeEventListener(WORKS_UPDATED_EVENT, syncWorks);
     };
-  }, []);
+  }, [isAdmin]);
 
   const filteredWorks = useMemo(
     () =>

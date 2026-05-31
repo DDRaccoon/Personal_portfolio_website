@@ -5,6 +5,24 @@ import {
   isAdminRequest,
   listWorksFromCms,
 } from "../../../lib/server/cms";
+import { getStaticWorks, localizeKnownMediaUrls } from "../../../lib/staticWorks";
+
+const PUBLIC_WORKS_CACHE_CONTROL = "public, s-maxage=300, stale-while-revalidate=86400";
+const FRESH_WORKS_CACHE_CONTROL = "private, no-store";
+
+function shouldBypassCache(request) {
+  return request.nextUrl.searchParams.get("fresh") === "1" && isAdminRequest(request);
+}
+
+function worksResponse(body, { status = 200, source = "cms", cache = true } = {}) {
+  return NextResponse.json(body, {
+    status,
+    headers: {
+      "Cache-Control": cache ? PUBLIC_WORKS_CACHE_CONTROL : FRESH_WORKS_CACHE_CONTROL,
+      "X-Works-Source": source,
+    },
+  });
+}
 
 function validatePayload(body) {
   return Boolean(
@@ -16,15 +34,14 @@ function validatePayload(body) {
   );
 }
 
-export async function GET() {
+export async function GET(request) {
+  const cache = !shouldBypassCache(request);
   try {
-    const works = await listWorksFromCms();
-    return NextResponse.json(works);
+    const works = localizeKnownMediaUrls(await listWorksFromCms());
+    return worksResponse(works, { cache });
   } catch (error) {
-    return NextResponse.json(
-      { error: error.message || "Failed to fetch works" },
-      { status: 500 }
-    );
+    console.error("Falling back to static works snapshot:", error);
+    return worksResponse(getStaticWorks(), { source: "static", cache });
   }
 }
 

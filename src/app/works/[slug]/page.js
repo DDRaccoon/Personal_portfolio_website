@@ -7,7 +7,7 @@ import { useParams, useRouter } from "next/navigation";
 import { useLanguage, useSiteCopy } from "../../../components/i18n/LanguageProvider";
 import { useAdmin } from "../../../components/auth/AdminProvider";
 import WorkRenderer from "../../../components/works/WorkRenderer";
-import { getWorkBySlug } from "../../../lib/worksStore";
+import { getStaticWorkBySlug, getWorkBySlug } from "../../../lib/worksStore";
 
 export default function WorkDetailPage() {
   const router = useRouter();
@@ -15,16 +15,18 @@ export default function WorkDetailPage() {
   const { locale } = useLanguage();
   const siteCopy = useSiteCopy();
   const { isAdmin } = useAdmin();
-  const [work, setWork] = useState(null);
-  const [loading, setLoading] = useState(true);
-
   const slug = useMemo(() => String(params.slug || ""), [params.slug]);
+  const initialStaticWork = useMemo(() => getStaticWorkBySlug(slug), [slug]);
+  const [work, setWork] = useState(() => initialStaticWork);
+  const [loading, setLoading] = useState(() => !initialStaticWork);
 
   useEffect(() => {
     let mounted = true;
 
     const fetchWork = async () => {
-      setLoading(true);
+      setWork(initialStaticWork);
+      setLoading(!initialStaticWork);
+
       const nextWork = await getWorkBySlug(slug);
       if (!mounted) return;
       setWork(nextWork);
@@ -36,7 +38,7 @@ export default function WorkDetailPage() {
     return () => {
       mounted = false;
     };
-  }, [slug]);
+  }, [initialStaticWork, slug]);
 
   const title = locale === "zh" ? work?.title_zh || work?.title_en : work?.title_en;
   const summary = locale === "zh" ? work?.summary_zh || work?.summary_en : work?.summary_en;

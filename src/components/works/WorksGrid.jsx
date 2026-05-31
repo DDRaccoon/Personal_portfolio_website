@@ -2,16 +2,18 @@
 
 import React from 'react';
 import { getWorksByCategoryCompat } from '../../content/works';
+import { getStaticWorksByCategory } from '../../lib/worksStore';
 import WorkCard from './WorkCard';
 import { PlusIcon } from '../ui/icons';
 
 export default function WorksGrid({ category = 'full-game' }) {
-  const [works, setWorks] = React.useState([]);
+  const [works, setWorks] = React.useState(() => getStaticWorksByCategory(category));
 
   React.useEffect(() => {
     let mounted = true;
 
     const load = async () => {
+      setWorks(getStaticWorksByCategory(category));
       const nextWorks = await getWorksByCategoryCompat(category);
       if (!mounted) return;
       setWorks(nextWorks);

@@ -2,7 +2,8 @@
 import { 
   getAllWorks, 
   getWorksByCategory, 
-  getWorkBySlug 
+  getWorkBySlug,
+  getStaticWorks
 } from '../../lib/worksStore';
 
 // 兼容性函数 - 将本地存储数据转换为旧格式
@@ -18,7 +19,7 @@ function adaptWorkData(work) {
 }
 
 // 获取所有作品（兼容旧接口）
-export const allWorks = [];
+export const allWorks = getStaticWorks().map(adaptWorkData);
 
 // 获取首页展示的作品（兼容旧接口）
 export const getFeaturedWorks = async () => {

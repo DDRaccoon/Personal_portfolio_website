@@ -1,3 +1,12 @@
+import {
+  getStaticWorkById,
+  getStaticWorkBySlug,
+  getStaticWorks,
+  getStaticWorksByCategory,
+  localizeKnownMediaUrls,
+  sortWorks,
+} from "./staticWorks";
+
 const WORKS_UPDATED_EVENT = "works:updated";
 
 function toSlug(input) {
@@ -90,9 +99,10 @@ function emitWorksUpdated() {
 }
 
 async function request(path, options = {}) {
+  const method = options.method || "GET";
   const response = await fetch(path, {
-    cache: "no-store",
     ...options,
+    cache: options.cache || (method === "GET" ? "no-cache" : "no-store"),
     headers: {
       "Content-Type": "application/json",
       ...(options.headers || {}),
@@ -120,35 +130,47 @@ async function request(path, options = {}) {
   return data;
 }
 
-async function getAllWorks() {
+function freshPath(path, fresh) {
+  if (!fresh) return path;
+  const separator = path.includes("?") ? "&" : "?";
+  return `${path}${separator}fresh=1`;
+}
+
+async function getAllWorks({ fresh = false } = {}) {
+  const fallbackWorks = getStaticWorks();
   try {
-    return await request("/api/works");
+    const works = localizeKnownMediaUrls(await request(freshPath("/api/works", fresh), {
+      cache: fresh ? "no-store" : undefined,
+    }));
+    return sortWorks(Array.isArray(works) ? works : fallbackWorks);
   } catch (error) {
     console.error("Error loading works from CMS:", error);
-    return [];
+    return fallbackWorks;
   }
 }
 
-async function getWorkById(id) {
+async function getWorkById(id, { fresh = false } = {}) {
   if (!id) return null;
   try {
-    return await request(`/api/works/${encodeURIComponent(id)}`);
+    return localizeKnownMediaUrls(await request(freshPath(`/api/works/${encodeURIComponent(id)}`, fresh), {
+      cache: fresh ? "no-store" : undefined,
+    }));
   } catch {
-    return null;
+    return getStaticWorkById(id);
   }
 }
 
 async function getWorkBySlug(slug) {
   if (!slug) return null;
   try {
-    return await request(`/api/works/slug/${encodeURIComponent(slug)}`);
+    return localizeKnownMediaUrls(await request(`/api/works/slug/${encodeURIComponent(slug)}`));
   } catch {
-    return null;
+    return getStaticWorkBySlug(slug);
   }
 }
 
-async function getWorksByCategory(category) {
-  const works = await getAllWorks();
+async function getWorksByCategory(category, options) {
+  const works = await getAllWorks(options);
   return works
     .filter((work) => work.category === category)
     .sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
@@ -228,4 +250,8 @@ export {
   saveAllWorks,
   WORKS_UPDATED_EVENT,
   toSlug,
+  getStaticWorks,
+  getStaticWorksByCategory,
+  getStaticWorkById,
+  getStaticWorkBySlug,
 };

@@ -23,6 +23,13 @@ function getStorageBucket() {
   return STORAGE_BUCKET;
 }
 
+function getSupabaseTimeoutMs(method) {
+  const fallback = method === "GET" ? 4000 : 15000;
+  const envName = method === "GET" ? "SUPABASE_REST_READ_TIMEOUT_MS" : "SUPABASE_REST_WRITE_TIMEOUT_MS";
+  const value = Number(process.env[envName]);
+  return Number.isFinite(value) && value > 0 ? value : fallback;
+}
+
 export function toSlug(input) {
   return (input || "")
     .toLowerCase()
@@ -85,6 +92,8 @@ function fromDbWork(row) {
 async function supabaseRequest(path, { method = "GET", body, headers = {} } = {}) {
   const baseUrl = getSupabaseBaseUrl();
   const serviceRoleKey = getSupabaseServiceRoleKey();
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), getSupabaseTimeoutMs(method));
 
   const response = await fetch(`${baseUrl}/rest/v1${path}`, {
     method,
@@ -96,6 +105,9 @@ async function supabaseRequest(path, { method = "GET", body, headers = {} } = {}
     },
     body: body === undefined ? undefined : JSON.stringify(body),
     cache: "no-store",
+    signal: controller.signal,
+  }).finally(() => {
+    clearTimeout(timeout);
   });
 
   const text = await response.text();

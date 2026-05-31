@@ -30,7 +30,7 @@ function EditWorkPageContent() {
 
     const fetchWork = async () => {
       setLoading(true);
-      const nextWork = await getWorkById(workId);
+      const nextWork = await getWorkById(workId, { fresh: true });
       if (!mounted) return;
       setExistingWork(nextWork);
       setLoading(false);
